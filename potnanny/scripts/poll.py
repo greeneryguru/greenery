@@ -39,7 +39,7 @@ def main():
     measurement_queue = []
     
     if not os.path.exists(sensor_file):
-        sys.stderr.write("sensor file '%' does not exist\n" % sensor_file)
+        sys.stderr.write("sensor file '%s' does not exist\n" % sensor_file)
         sys.exit(1)
         
     with open(sensor_file, 'r') as fh:
