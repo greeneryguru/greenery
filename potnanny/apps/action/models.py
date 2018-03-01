@@ -240,12 +240,15 @@ class ActionManager(object):
                         return None
                 
                 return process    
-            
         
-        process = ActionProcess(action.id)
-        db.session.add(process)
-        db.session.commit()            
-        return process
+        # only accept an 'on' trigger as the start of a new process
+        if trigger != 'off':
+            process = ActionProcess(action.id)
+            db.session.add(process)
+            db.session.commit()            
+            return process
+        
+        return None
 
 
     def close_process(self, process):
