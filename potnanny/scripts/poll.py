@@ -31,7 +31,7 @@ from miflora.miflora_poller import MI_CONDUCTIVITY, MI_MOISTURE, MI_LIGHT, \
 
 # global vars
 now = datetime.datetime.now().replace(second=0, microsecond=0)
-sensor_file = '/var/tmp/btle-sensors.json'
+sensor_file = '/var/tmp/ble-sensors.json'
 
 def main():
     known_sensors = {}
@@ -121,6 +121,10 @@ def ggdht_sensor(address):
         results = device.get_measurements()
         
         for key, value in results.items():
+            # omit bad values/error codes
+            if value == 65535:
+                continue
+            
             obj = Measurement(address, key, value, now)
             db.session.add(obj)
             measurements.append(obj)
