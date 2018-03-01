@@ -195,7 +195,11 @@ class GGDHTSensor(Peripheral):
         uuids = self.char_uuid_map.values()
         chars = [c for c  in service.getCharacteristics() if c.uuid in uuids]
         for ch in chars:
-            val = ch.read()
+            try:
+                val = ch.read()
+            except:
+                continue
+            
             name = self.name_for_uuid(ch.uuid)
             
             if name == 'temperature':
