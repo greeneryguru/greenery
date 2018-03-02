@@ -13,7 +13,7 @@ class Action(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(24), nullable=False)
     measurement_type = db.Column(db.String(24), nullable=False)
-    sensor_address = db.Column(db.String(24), nullable=False, unique=True)
+    sensor_address = db.Column(db.String(24), nullable=False)
     outlet_id = db.Column(db.String(128), nullable=True)
     action_type = db.Column(db.String(24), nullable=False, server_default='sms-message')
     sms_recipient = db.Column(db.String(24), nullable=True)
