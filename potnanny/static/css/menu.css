@@ -1,33 +1,37 @@
+/*
+customizations to make the defaut mini.css nav header more mobile responsive,
+and compliant with this site.
+*/
+
+header button.responsiveicon, header [type="button"].responsiveicon,
+header .button.responsiveicon, header [role="button"].responsiveicon {
+  background: var(--header-back-color);
+  font-size: 1.75rem;
+}
+
+header button.responsiveicon:hover, header button.responsiveicon:focus,
+header [type="button"].responsiveicon:hover,
+header [type="button"].responsiveicon:focus,
+header .button.responsiveicon:hover, header .button.responsiveicon:focus,
+header [role="button"].responsiveicon:hover,
+header [role="button"].responsiveicon:focus {
+  background: var(--header-back-color);
+}
+
 .navbar {
-    background-color: #689F38;
     overflow: hidden;
-    border-bottom: 10px solid #8BC34A;
 }
 
-.navbar a {
-    float: left;
-    display: block;
-    color: #f2f2f2;
-    text-align: center;
-    padding: 14px 16px;
-    text-decoration: none;
-    font-size: 1.0em;
-}
-
-.navbar a:hover {
-    background-color: #8BC34A;
-    color: black;
-}
-
-.navbar .icon {
+.navbar .responsiveicon {
     display: none;
-} 
+    /* font-size: 1.2em; */
+}
 
 @media screen and (max-width: 680px) {
     .navbar a:not(:first-child) {
         display: none;
     }
-    .navbar a.icon {
+    .navbar a.responsiveicon {
         float: right;
         display: block;
     }
@@ -37,7 +41,7 @@
     .navbar.responsive {
         position: relative;
     }
-    .navbar.responsive a.icon {
+    .navbar.responsive a.responsiveicon {
         position: absolute;
         right: 0;
         top: 0;
@@ -45,8 +49,5 @@
     .navbar.responsive a {
         float: none;
         display: block;
-        text-align: left;
   }
-} 
-
-
+}

@@ -1,154 +1,28 @@
 {% extends "base.html" %}
-{% block headers %}
-    <script>
-    var ICON_MAP = {};
-    var TEMPERATURE = "{{ temperature }}";
-    
-    function celsiusToFahrenheit(v) {
-        var f = 9.0/5.0 * v + 32;
-        return f.toFixed(1);
-    }
-     
-    function measurementSuffix(m) {
-        var s = {
-            "temperature": "&deg;",
-            "humidity": "&percnt;",
-            "soil-moisture": "&percnt;",
-            "battery": "&percnt;"
-        }
-        if (m in s) {
-            return s[m];
-        } else {
-            return "";
-        }
-    }
-   
-    function formattedValueFromMeasurementObject(o) {
-        var suffix = measurementSuffix(o.type);
-        var myvalue = o.value; 
-         
-        if (o.type == "temperature" && TEMPERATURE == "f") {
-            myvalue = celsiusToFahrenheit(myvalue);
-        }
-            
-        myvalue = myvalue.toString() + suffix;
-        return myvalue;
-    }
-     
-    function buildWidget(o) {
-        widgetId = [o.type, o.sensor].join(".");
-        iconId = ["icon", o.type, o.sensor].join(".");
-        iconClasses = ICON_MAP[o.type].join(" ");
-        valueId = ["value", o.type, o.sensor].join(".");
-        myvalue = formattedValueFromMeasurementObject(o);
-        
-        elements = [
-            '<div class="measurement-widget" id="' + widgetId + '">',
-            '<div class="icon-widget">',
-            '<i class="' + iconClasses + '" style="color: #FFC107;"></i>',
-            '</div>',
-            '<a href="/measurement/chart/' + o.sensor + '?type=' + o.type + '">',
-            '<div class="value-widget" id="' + valueId + '">',
-            ' ',
-            myvalue,
-            '</div>',
-            '</a>',
-            '<div class="type-widget">',
-            o.type,
-            '</div>',
-            '</div>'
-        ];
-        
-        return elements.join("");
-    }
-    
-    function updateMeasurement(id) {
-        $.get("/measurement/sensor/" + id,
-            {'csrfmiddlewaretoken': '{{ csrf_token() }}'},
-            function(data){
-                $.each(data, function(i, o){
-                    var tagId = [o.type, o.sensor].join(".");
-                    var valueId =  ["value", o.type, o.sensor].join(".");
-                    
-                    if (o.type == "battery") {
-                        var iconId = ["icon", o.type, o.sensor].join(".");
-                        if (o.value > 85) {
-                            $(document.getElementById(iconId)).removeClass();
-                            $(document.getElementById(iconId)).addClass("fas");
-                            $(document.getElementById(iconId)).addClass("fa-battery-full");
-                        } else if (o.value > 60 && o.value <= 85) {
-                            $(document.getElementById(iconId)).removeClass();
-                            $(document.getElementById(iconId)).addClass("fas");
-                            $(document.getElementById(iconId)).addClass("fa-battery-three-quarters");
-                        } else if (o.value > 35 && o.value <= 60) {
-                            $(document.getElementById(iconId)).removeClass();
-                            $(document.getElementById(iconId)).addClass("fas");
-                            $(document.getElementById(iconId)).addClass("fa-battery-half");
-                        } else if (o.value > 15 && o.value <= 35) {
-                            $(document.getElementById(iconId)).removeClass();
-                            $(document.getElementById(iconId)).addClass("fas");
-                            $(document.getElementById(iconId)).addClass("fa-battery-quarter");
-                        } else {
-                            $(document.getElementById(iconId)).removeClass();
-                            $(document.getElementById(iconId)).addClass("fas");
-                            $(document.getElementById(iconId)).addClass("fa-battery-empty");
-                        }
-                    } else {
-                        if ($(document.getElementById(tagId)).length) {
-                            var myvalue = formattedValueFromMeasurementObject(o);
-                            $(document.getElementById(valueId)).html(" " + myvalue);
-                        } else {
-                            result = buildWidget(o);
-                            html = $.parseHTML(result);
-                            $(document.getElementById(o.sensor)).append(html);
-                        }
-                    }
-                });
-            },
-            'json'
-        );    
-    }
-    
-    $(document).ready(function() {
-        $.get("/measurement-icons",
-            {'csrfmiddlewaretoken': '{{ csrf_token() }}'},
-            function(data){
-                ICON_MAP = data;
-            },
-            'json'
-        );
-                
-        $(".sensor-widget").each(function() {
-            var id = this.id;
-            updateMeasurement(id);                
-        });
-        
-        setInterval(function() {
-            $(".sensor-widget").each(function() {
-                var id = this.id;
-                updateMeasurement(id);                
-            });
-        }, 20000);
-    });
-    
-    </script>
-{% endblock headers %}
 {% block content %}
-{% if sensors %}
-    {% for s in sensors %}
-    <div class="row white gap">
-        <div class="twelve columns">
-            <div class="sensor-widget padded" id="{{ s.address }}">
-                <div class="battery-widget" id="battery.{{ s.address }}">
-                    <i class="fas fa-battery-full" id="icon.battery.{{ s.address }}" style="color: #777;"></i>
-                </div>
-                <div class="sensor-name">{{ s.name }}</div>
-                
-            </div>
-        </div>
+
+{% if payload %}
+  {% for room in payload %}
+    <a href="{{ url_for('core.room_details', pk=room.id)}}">
+    <div>
+      {{ room.name }}
+      {{ room.temperature }}
+      {% if 'grow' in room %}
+        {{ room.grow.name }},
+        {% if 'flower_days' in room.grow %}
+          flowering day {{ room.grow.flower_days }}
+        {% else %}
+          growth day {{ room.grow.veg_days }}
+        {% endif %}
+      {% endif %}
     </div>
-    {% endfor %}
+    </a>
+  {% endfor %}
 {% else %}
-    No data available
+  <p>
+  No rooms defined
+  </p>
+  <a href="{{ url_for('core.room_edit') }}">Add a room</a>
 {% endif %}
+
 {% endblock %}

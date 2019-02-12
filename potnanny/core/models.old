@@ -1,0 +1,248 @@
+from passlib.hash import pbkdf2_sha256
+from sqlalchemy import (Column, Integer, String, Text, Boolean, Float,
+        DateTime, ForeignKey, func)
+from sqlalchemy.orm import relationship
+from .database import Base, db_session
+
+
+class Error(Base):
+    __tablename__ = 'errors'
+
+    id = Column(Integer, primary_key=True)
+    title = Column(String(128))
+    message = Column(Text)
+    created = Column(DateTime, default=func.now())
+
+
+class User(Base):
+    __tablename__ = 'users'
+
+    id = Column(Integer, primary_key=True)
+    username = Column(String(48))
+    password = Column(String(256))
+    is_active = Column(Boolean, default=True)
+    created = Column(DateTime, default=func.now())
+
+    def __repr__(self):
+        return "<User({})>".format(self.username)
+
+    def set_password(self, pw):
+        self.password = pbkdf2_sha256.hash(pw, rounds=200000, salt_size=16)
+        db_session.commit()
+
+    def check_password(self, pw):
+        return pbkdf2_sha256.verify(pw, self.password)
+
+
+class Room(Base):
+    __tablename__ = 'rooms'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(48), unique=True, default='my room')
+    notes = Column(Text)
+    created = Column(DateTime, default=func.now())
+
+    # relationships #
+    sensors = relationship('Sensor', backref='room', lazy=True)
+    actions = relationship('Action', backref='room',
+                                cascade='all,delete', lazy=True)
+
+    # only active (not ended) grows are linked to the room.
+    grows = relationship('Grow',
+                primaryjoin="and_(Room.id==Grow.room_id, Grow.ended == None)",
+                backref='room',
+                cascade='all,delete',
+                lazy=True)
+
+
+    def __repr__(self):
+        return "<Room({})>".format(self.name)
+
+    """
+    most recent environment values (temperature/humidity).
+
+    params:
+        self
+    returns:
+        a dict, like {'temperature': 20.0, 'humidity': 51}
+    """
+    def environment(self):
+        data = {}
+        type_list = ['temperature', 'humidity']
+        if self.sensors:
+            id_list = [s.id for s in self.sensors]
+            for typ in type_list:
+                row = Measurement.query.filter(
+                        Measurement.type == typ).filter(
+                        Measurement.sensor_id.in_(id_list)).order_by(
+                        Measurement.created.desc()).first()
+
+                if row:
+                    data[typ] = row.value
+
+        return data
+
+
+class Sensor(Base):
+    __tablename__ = 'sensors'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(48), default='my sensor')
+    address = Column(String(48), unique=True, nullable=False)
+    model = Column(String(48), nullable=True)
+    created = Column(DateTime, default=func.now())
+
+    # relationships
+    room_id = Column(Integer, ForeignKey('rooms.id'), nullable=True)
+
+    def __repr__(self):
+        return "<Sensor({})>".format(self.name)
+
+
+    """
+    Get all the latest measurement values from this sensor
+
+    params:
+        None
+    returns:
+        a dict
+    """
+    def latest_readings(self):
+        results = db_session.query(
+            Measurement.type, Measurement.value, func.max(Measurement.created)
+            ).filter(Measurement.sensor_id == self.id).order_by(
+            Measurement.created.desc(), Measurement.code).group_by(
+            Measurement.type).all()
+
+        if not results:
+            return {}
+
+        return {r[0]:r[1] for r in results}
+
+    """
+    get list of all valid measurement types for this sensor type, based what it
+    has reported in the past.
+
+    params:
+        None
+    returns:
+        a list ['battery','temperature','humidity']
+    """
+    def measurement_types(self):
+        results = db_session.query(Measurement.type).filter(
+            Measurement.sensor_id == self.id).order_by(
+            Measurement.type).group_by(
+            Measurement.type).all()
+
+        if not results:
+            return []
+
+        return [r[0] for r in results]
+
+
+class Measurement(Base):
+    __tablename__ = 'measurements'
+
+    id = Column(Integer, primary_key=True)
+    type = Column(String(24), nullable=False, index=True, default='temperature')
+    value = Column(Float, default=0.0)
+    created = Column(DateTime, default=func.now())
+
+    # relationships
+    sensor_id = Column(Integer, ForeignKey('sensors.id'))
+
+    def __repr__(self):
+        return "<Measurement(id={},type={},value={})>".format(
+            self.id,
+            self.type,
+            self.value)
+
+
+class Grow(Base):
+    __tablename__ = 'grows'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(48), nullable=False)
+    notes = Column(Text, nullable=True)
+    started = Column(DateTime, default=func.now())
+    transition = Column(DateTime, nullable=True)
+    ended = Column(DateTime, nullable=True)
+
+    # relationships
+    room_id = Column(Integer, ForeignKey('rooms.id'))
+
+    def __repr__(self):
+        return "<Grow({})>".format(self.name)
+
+
+class Action(Base):
+    __tablename__ = 'actions'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(48), default='my action')
+    is_active = Column(Boolean, default=True)
+    details = Column(Text, nullable=False)
+    created = Column(DateTime, default=func.now())
+
+    # relationships
+    room_id = Column(Integer, ForeignKey('rooms.id'))
+
+    # An action may have "None" or "One" open triggers at any given time.
+    # There should never be more than one, but a list is always returned
+    triggers = relationship('Trigger',
+        primaryjoin="and_( Action.id==Trigger.action_id, or_(Trigger.closed == None, Trigger.closed > func.now()) )",
+        backref='action',
+        lazy=True,
+        cascade='all,delete')
+
+
+    def __repr__(self):
+        return "<Action({})>".format(self.name)
+
+
+class Trigger(Base):
+    __tablename__ = 'triggers'
+
+    id = Column(Integer, primary_key=True)
+    created = Column(DateTime, default=func.now())
+    closed = Column(DateTime, nullable=True)
+    condition = Column(String(16), nullable=True)
+
+    # relationships
+    measurement_id = Column(Integer, ForeignKey('measurements.id'))
+    action_id = Column(Integer, ForeignKey('actions.id'))
+
+    def __repr__(self):
+        return "<Trigger(created={},meas={},action={})>".format(
+            self.created,
+            self.measurement_id,
+            self.action_id)
+
+
+class FutureAction(Base):
+    __tablename__ = 'future_actions'
+
+    id = Column(Integer, primary_key=True)
+    action = Column(String(16), nullable=False, default="off")
+    outlet = Column(String(48), nullable=False)
+    created = Column(DateTime, default=func.now())
+    run_at = Column(DateTime, nullable=False)
+    completed = Column(DateTime)
+
+    def __repr__(self):
+        return "<FutureAction({})>".format(self.id)
+
+
+class WirelessOutlet(Base):
+    __tablename__ = 'wireless_outlets'
+
+    id = Column(Integer, primary_key=True)
+    name = Column(String(48), nullable=False, unique=True)
+    type = Column(String(24), nullable=False, default='wireless')
+    on_code = Column(String(24), nullable=False)
+    off_code = Column(String(24), nullable=False)
+    state = Column(Boolean, nullable=False, default=True)
+    created = Column(DateTime, default=func.now())
+
+    def __repr__(self):
+        return "<WirelessOutlet({})>".format(self.name)

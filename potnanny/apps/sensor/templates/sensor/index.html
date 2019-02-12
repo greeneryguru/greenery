@@ -1,45 +1,34 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="row white gap">
-    <div class="twelve columns">
-    {% if title %}
-    <h4 class="padded">{{ title }}</h4>
-    {% endif %}
-    </div>
-</div>
-
-{% if sensors %}
-    {% for sensor in sensors %}
-    <a href="/sensor/{{ sensor.id }}/edit" class="row-link">
-    <div class="row white gap">    
-      <div class="twelve columns">
-        <p class="padded">
-        {{ sensor.name }}
-        </p>
-      </div>
-    </div>
-    </a>
-    {% endfor %}
-{% else %}
-    <div class="row white gap">
-        <div class="twelve rows">
-            <p class="padded">
-            No sensors defined
-            </p>
-        </div>
-    </div>
+{% if title %}
+  <h3>{{ title }}</h3>
 {% endif %}
-<div class="row white gap">
-    <div class="twelve rows">
-        <p class="padded">
-        <a href="/sensor/create">
-        <span class="fa-stack fa-spin-hover">
-        <i class="fa fa-circle-thin fa-stack-2x"></i>
-        <i class="fa fa-plus fa-stack-1x"></i>
-        </span>
-        </a>
-        </p>
-    </div>
-</div>
+{% if payload %}
+  <div class="row">
+  {% for obj in payload %}
+      <div class="card">
+        <div class="section dark">
+          <h4><a href="{{ url_for('sensor.edit', pk=obj.id) }}">{{ obj.name }}</a></h4>
+        </div>
+        <div class="section">
+          address: {{ obj.address }}
+        </div>
+        <div class="section">
+          model: {{ obj.model }}
+        </div>
+        <div class="section">
+          room:
+            {% if obj.room == 'unassigned' %}
+            <mark class="secondary">{{ obj.room }}</mark>
+            {% else %}
+            <mark>{{ obj.room.name }}</mark>
+            {% endif %}
+        </div>
+      </div>
+  {% endfor %}
+  </div>
+{% else %}
+No Sensor Data
+{% endif %}
 {% endblock %}

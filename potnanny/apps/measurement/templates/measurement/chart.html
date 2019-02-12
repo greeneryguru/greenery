@@ -1,46 +1,19 @@
 {% extends "base.html" %}
 {% block headers %}
-    <script src="{{ url_for('static',  filename='js/Chart.bundle.js') }}"></script>
-    <script src="{{ url_for('static',  filename='js/chartbuilder.js') }}"></script>
+    <script src="{{ url_for('static',  filename='js/Chart.bundle.min.js') }}"></script>
+    <script src="{{ url_for('static',  filename='js/chartjs-plugin-annotation.min.js') }}"></script>
     <script>
-    var globalChartRefs = {};
-
     $(document).ready(function() {
-        $("[id*=chart-]").each(function(){
-            var pk = this.id.split("-")[1];
-            $.get("/measurement/chart/sensor?address={{ sensor.address }}&type={{ measurement }}&legend=1&hours={{ hours }}&dateson=1",
-                {'csrfmiddlewaretoken': '{{ csrf_token() }}'},
-                function(data){
-                    createChart("chart-{{ measurement }}", data, globalChartRefs);
-	            }, 'json');
-        });
-        setInterval(function(){
-            $("[id*=chart-]").each(function(){
-                var pk = this.id.split("-")[1];
-                $.get("/measurement/chart/sensor?address={{ sensor.address }}&type={{ measurement }}&legend=1&hours={{ hours }}&dateson=1",
-                    {'csrfmiddlewaretoken': '{{ csrf_token() }}'},
-                    function(data){
-                        createChart("chart-{{ measurement }}", data, globalChartRefs);
-	                }, 'json');
-            });
-        }, 20000);
+        var ctx = document.getElementById("chart").getContext("2d");
+        var chart = new Chart(ctx, {{ payload | safe }});
     });
     </script>
 {% endblock %}
 {% block content %}
-{% if measurement %}
-    <div class="row white gap center">
-        <div class="twelve columns">
-            <p class="padded">sensor | {{ sensor.name }}</p>
-            <div id="canvas-wrapper" style="position: relative; height: 60vh">
-                <canvas id="chart-{{ measurement }}"></canvas>
-            </div>
-            <a href="/measurement/chart/{{ sensor.address }}?type={{ measurement }}&legend=1&hours=8">8hr</a> | 
-            <a href="/measurement/chart/{{ sensor.address }}?type={{ measurement }}&legend=1&hours=12">12hr</a> | 
-            <a href="/measurement/chart/{{ sensor.address }}?type={{ measurement }}&legend=1&hours=24">1d</a> | 
-            <a href="/measurement/chart/{{ sensor.address }}?type={{ measurement }}&legend=1&hours=48">2d</a> |
-            <a href="/measurement/chart/{{ sensor.address }}?type={{ measurement }}&legend=1&hours=96">4d</a>
-        </div>
+{% if payload %}
+  <h3>Chart</h3>
+    <div class="row">
+      <canvas id="chart"></canvas>
     </div>
 {% else %}
     No data available

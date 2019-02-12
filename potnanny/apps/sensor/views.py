@@ -1,58 +1,77 @@
-from flask import render_template, redirect, request, session, Blueprint
+from flask import Blueprint, render_template, redirect, request, url_for, jsonify
+from flask_jwt_extended import jwt_required
+
 from potnanny.extensions import db
-from .models import Sensor
 from .forms import SensorForm
+from potnanny.core.schemas import SensorSchema
+from potnanny.core.models import Sensor, Room
+from potnanny.crud import CrudInterface
 
 
-sensor = Blueprint('sensor', __name__, template_folder='templates')
+
+bp = Blueprint('sensor', __name__,
+                    template_folder='templates', url_prefix='/sensors')
+ifc = CrudInterface(Sensor, SensorSchema)
 
 
-@sensor.route('/sensor')
-def sensor_index():
+@bp.route('/', methods=['GET'])
+@jwt_required
+def index():
+    data = []
     sensors = Sensor.query.all()
-    return render_template('sensor/index.html', 
+    for s in sensors:
+        obj = {
+            'id': s.id,
+            'name': s.name,
+            'address': s.address,
+            'model': s.model,
+            'room': 'unassigned',
+        }
+        if s.room:
+            obj['room'] = s.room
+
+        data.append(obj)
+
+    return render_template('sensor/index.html',
                 title='Sensors',
-                sensors=sensors)
+                payload=data)
 
-        
-@sensor.route('/sensor/create', methods=['GET','POST'])
-@sensor.route('/sensor/<pk>/edit', methods=['GET','POST'])
-def sensor_edit(pk=None):
-    obj = None
-    title = 'Add Sensor'
 
-    if pk:
-        title = 'Edit Sensor'
-        obj = Sensor.query.get_or_404(int(pk))
-        
-    form = SensorForm(obj=obj)  
+@bp.route('/<int:pk>/measurements', methods=['GET'])
+@jwt_required
+def get_measurements(pk):
+    serialized, results, code = ifc.get(pk, ['measurements', 'latest_readings'])
+    if not serialized:
+        return None
+
+    return jsonify(serialized)
+
+
+@bp.route('/<pk>/edit', methods=['GET','POST'])
+@jwt_required
+def edit(pk):
+    title = 'Edit Sensor'
+    sensor = Sensor.query.get_or_404(pk)
+
+    form = SensorForm(obj=sensor)
+
+    rooms = Room.query.all()
+    for r in rooms:
+        form.room_id.choices.append((str(r.id), r.name))
+
     if request.method == 'POST' and form.validate_on_submit():
-        if pk:
-            form.populate_obj(obj)
-        else:
-            o = Sensor(form.name.data, form.address.data)
-            db.session.add(o)
-    
+        sensor.name = form.name.data
+        if form.room_id.data and form.room_id.data != "":
+            room = Room.query.get(int(form.room_id.data))
+            sensor.room = room
+
         db.session.commit()
+
         if request.args.get("next"):
             return redirect(request.args.get("next"))
         else:
-            return redirect('/sensor')
+            return redirect('/sensors')
 
-    return render_template('sensor/form.html', 
+    return render_template('sensor/form.html',
         form=form,
-        title=title,
-        pk=pk)    
-
-
-@sensor.route('/sensor/<pk>/delete', methods=['POST'])
-def sensor_delete(pk):
-    o = Sensor.query.get_or_404(int(pk))
-    db.session.delete(o)
-    db.session.commit()
-    if request.args.get("next"):
-        return redirect(request.args.get("next"))
-    else:
-        return redirect('/sensor')
-
-
+        title=title)

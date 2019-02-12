@@ -1,114 +1,53 @@
-from flask import render_template, redirect, request, session, \
-    Blueprint, jsonify
-from potnanny.extensions import db
-from .models import Action, ActionProcess
+from flask import Blueprint, render_template, redirect, request, url_for
+from potnanny.core.models import Action
+from potnanny.core.schemas import ActionSchema
 from .forms import ActionForm
-from sqlalchemy.orm import load_only
-from potnanny.apps.vesync.models import VesyncManager
-from potnanny.apps.measurement.models import Measurement
-from potnanny.apps.sensor.models import Sensor
-import re
+from potnanny.apps.base import CrudBase
+from potnanny.extensions import db
 
-action = Blueprint('action', __name__,
-                        template_folder='templates')
+view = Blueprint('action', __name__, template_folder='templates',
+                    url_prefix='/actions')
+ifc = CrudBase(Action, ActionSchema)
 
-@action.route('/action')
-def action_index():
-    actions = Action.query.all()
-    return render_template('action/index.html', 
-                title='Actions',
-                actions=actions)
 
-        
-@action.route('/action/create', methods=['GET','POST'])
-@action.route('/action/<int:pk>/edit', methods=['GET','POST'])
-def action_edit(pk=None):
+@view.route('/', methods=['GET'])
+def index():
+    serialized, err, code = ifc.get()
+    if err:
+        pass
+
+    return render_template('action/index.html',
+                title='Action',
+                payload=serialized)
+
+
+@view.route('/create', methods=['GET','POST'])
+@view.route('/<pk>/edit', methods=['GET','POST'])
+def edit(pk=None):
     obj = None
     title = 'Add Action'
-    measurements = None
-    outlets = None
-    has_outlets = False
+    schedules = None
+
     if pk:
         title = 'Edit Action'
         obj = Action.query.get_or_404(pk)
-        
+
     form = ActionForm(obj=obj)
-
-    # populate options for measurement type select fields
-    form.measurement_type.choices = []
-    measurements = Measurement.query.group_by(
-            Measurement.type_m).options(
-                load_only("type_m")).distinct("type_m").all()
-            
-    for m in measurements:
-        form.measurement_type.choices.append((m.type_m, m.type_m))  
-
-    # populate options for outlet select fields
-    form.outlet_id.choices = []
-    try:
-        mgr = VesyncManager()
-        for d in mgr.api.get_devices():
-            has_outlets = True
-            form.outlet_id.choices.append((d['id'], d['deviceName']))
-    except:
-        pass
-    
-    # populate sensor data choices
-    for s in list(Sensor.query.all()):
-        form.sensor_address.choices.append((s.address, s.name))
-    
-    # populate options for action-types
-    form.action_type.choices = [('sms-message', 'send message')]
-    if has_outlets:
-        form.action_type.choices.append(('switch-outlet', 'control outlet'))
-    
     if request.method == 'POST' and form.validate_on_submit():
         if pk:
-            if obj.active == True and form.active.data != True:
-                # Deactivating an action means we need to delete any 
-                # active ActionProcesses belonging to this Action.
-                ActionProcess.query.filter(
-                    ActionProcess.action_id == obj.id
-                ).delete()
-                db.session.commit()
-
             form.populate_obj(obj)
         else:
-            o = Action(form.name.data, 
-                        form.measurement_type.data, 
-                        form.outlet_id.data, 
-                        form.sensor_address.data,
-                        form.action_type.data)
+            r = Action(name=form.name.data)
+            db.session.add(r)
 
-            o.on_condition = form.on_condition.data
-            o.on_threshold = form.on_threshold.data
-                
-            if re.search(r'sms', form.action_type.data, re.IGNORECASE):
-                o.sms_recipient = form.sms_recipient.data
-                
-            if re.search(r'switch', form.action_type.data, re.IGNORECASE):
-                o.off_condition = form.off_condition.data
-                o.off_threshold = form.off_threshold.data
-
-            o.active = int(form.active.data)
-            db.session.add(o)
-    
         db.session.commit()
-        return redirect(request.args.get("next", "/action"))
 
-    return render_template('action/form.html', 
-                           form=form,
-                           title=title,
-                           pk=pk)    
+        if request.args.get("next"):
+            return redirect(request.args.get("next"))
+        else:
+            return redirect(url_for('room.index'))
 
-
-@action.route('/action/<int:pk>/delete', methods=['POST'])
-def action_delete(pk):
-    o = Action.query.get_or_404(pk)
-    db.session.delete(o)
-    db.session.commit()
-    return redirect(request.args.get("next", "/action"))
-    
-
-
-
+    return render_template('action/form.html',
+        form=form,
+        title=title,
+        pk=pk)

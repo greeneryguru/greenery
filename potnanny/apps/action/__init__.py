@@ -1,4 +1,2 @@
-from .views import action
-
-
-
+from .api import bp
+from .views import view

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="{{ url_for('static',  filename='js/jquery-3.3.1.min.js') }}"></script>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/mini-default.css') }}" type= "text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/site.css') }}" type= "text/css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/fontawesome.css') }}" type= "text/css">
+    {% if title %}<title>{{ title }}</title>{% endif %}
+  </head>
+  <body>
+  <div class="container">
+    <div class="row">
+    <form action="" method="post" name="login" class="form">
+      {{ form.hidden_tag() }}
+      <fieldset>
+        <h2 style="text-align: center;">Potnanny <i class="fas fa-seedling" style="color: green;"></i></h2>
+        <hr>
+        <div class="row">
+          <div class="col-sm">
+            <label for="name">{{ form.username.label }}</label>
+          </div>
+          <div class="col-sm">
+            {{ form.username(id="username", placeholder="username") }}
+            {% if form.username.errors %}
+            {% for err in form.username.errors %}
+            <span style="color: red;">{{ err }}</span>
+            {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-sm">
+            <label for="notes">{{ form.password.label }}</label>
+          </div>
+          <div class="col-sm">
+            {{ form.password(id="password", placeholder="password") }}
+            {% if form.password.errors %}
+            {% for err in form.password.errors %}
+            <span style="color: red;">{{ err }}</span>
+            {% endfor %}
+            {% endif %}
+          </div>
+        </div>
+      </fieldset>
+      <button type="submit" class="button bordered" style="text-align: center;">Login</button>
+    </form>
+    </div>
+  </div>
+</body>
+</html>

@@ -18,28 +18,9 @@ params:
 */
 function createChart(id, data, chartref) {
     var ctx = $("#" + id).get(0).getContext('2d');
-     if (id in chartref) {
+    if (id in chartref) {
         chartref[id].destroy();
     }
 
-    chartref[id] = new Chart(ctx, data);
+    chartref[id] = new Chart(ctx, JSON.parse(data));
 }
-
-
-/* 
-return the proper line color for a dataset, depending on what sequence number
-it is
-*/
-function indexLineColor(i) {
-    var values = [
-        "rgb(120, 200, 0)",
-        "rgb(20, 140, 220)",
-        "rgb(220, 70, 20)",
-        "rgb(220, 220, 130)",
-        "rgb(220, 180, 130)"   
-    ];
-    return values[i % values.length]
-}
-
-
-

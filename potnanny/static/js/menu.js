@@ -1,8 +1,8 @@
 function menuToggle() {
-    var x = document.getElementById("mynavbar");
-    if (x.className === "navbar") {
-        x.className += " responsive";
+    var x = document.getElementById("navbar");
+    if (x.classList.contains("navbar") && ! x.classList.contains("responsive")) {
+        x.classList.add("responsive");
     } else {
-        x.className = "navbar";
+        x.classList.remove("responsive");
     }
-} 
+}

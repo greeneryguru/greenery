@@ -1,0 +1,56 @@
+All Potnanny BLE plugins should adhere to these guidelines.
+
+1. The plugin must inherit from the BlePluginBase class.
+2. The plugin should contain all class methods, as instances of the class will
+   never be created.
+3. The plugin must have a class method called 'poll' that accepts a list of
+   devices. This method will filter only devices that are appropriate for the
+   plugin. Based either on the name of the device, or an address range.
+4. The plugin should return a list of results, containing a dict from each of
+   the valid devices.
+5. If the plugin is not concerned with any of the devices, it returns None.
+
+
+Poller code example:
+
+  measurements = []
+
+  all_devices = [
+    ('11:11:11:11:11', 'flower care'),
+    ('22:22:22:22:22', 'MJ_HT_V1'),
+    ('33:33:33:33:33', 'foo'),
+    ('44:44:44:44:44', 'bar'),
+    ('77:77:77:77:77', 'flower care'),
+  ]
+
+  foreach cls in BlePluginBase.plugins:
+    results = cls.poll(all_devices)
+    if results:
+      measurements += results
+
+The poller app with then insert parse all discovered measurements/sensors and
+insert into the database.
+
+The results returned by a plugin will look like:
+"""
+[
+  { 'name': 'flower care',
+    'address': '11:11:11:11:11',
+    'measurements': {
+      'temperature': 22.1,
+      'soil-moisture': 18,
+      'light': 11210,
+      'soil-ec': 318,
+    }
+  },
+  { 'name': 'flower care',
+    'address': '77:77:77:77:77',
+    'measurements': {
+      'temperature': 24.0,
+      'soil-moisture': 22,
+      'light': 12000,
+      'soil-ec': 780,
+    }
+  }
+]
+"""

@@ -1,41 +1,45 @@
 import os
-import tempfile
-from .utils import INSTANCE_FOLDER_PATH, BASEDIR
-
 
 class BaseConfig(object):
     PROJECT = "potnanny"
-    PROJECT_ROOT = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
+    PROJECT_ROOT = os.path.abspath(os.path.dirname(__file__))
+
     DEBUG = False
     TESTING = False
-    SECRET_KEY = 'super secret key'
-    LOG_FOLDER = os.path.join(INSTANCE_FOLDER_PATH, 'logs')
+    LOGIN_DISABLED = True
+    SECRET_KEY = 'super duper secret key'
     CRYPTO_CONTEXT_SCHEMES = ['bcrypt']
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASEDIR, 'sqlite.db')
-    SQLALCHEMY_TRACK_MODIFICATIONS = False
-    CSRF_ENABLED = False
-    WTF_CSRF_ENABLED = True
-    USERNAME = 'admin'
-    PASSWORD = 'admin123'
-    
-    
-class DefaultConfig(BaseConfig):
-    DEBUG = False
-    SQLALCHEMY_ECHO = False
-    
 
-class DebugConfig(BaseConfig):
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.abspath(
+        os.path.expanduser(os.path.join(PROJECT_ROOT, '..', 'sqlite.db')))
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SQLALCHEMY_ECHO = False
+
+    CSRF_ENABLED = False
+    WTF_CSRF_ENABLED = False
+
+    JWT_SECRET_KEY = SECRET_KEY
+    JWT_TOKEN_LOCATION = ['cookies']
+    JWT_COOKIE_SECURE = False
+    JWT_ACCESS_COOKIE_PATH = '/api/'
+    JWT_REFRESH_COOKIE_PATH = '/token/refresh'
+    JWT_COOKIE_CSRF_PROTECT = False
+
+    POTNANNY_PLUGIN_PATH = '../plugins'
+    POTNANNY_LOG_PATH = '../log'
+
+class Development(BaseConfig):
     DEBUG = True
     SQLALCHEMY_ECHO = True
-    CSRF_ENABLED = False
-    WTF_CSRF_ENABLED = False
-    
-    
-class TestConfig(BaseConfig):
+
+class Testing(BaseConfig):
     TESTING = True
-    LOGIN_DISABLED = True
-    CSRF_ENABLED = False
     WTF_CSRF_ENABLED = False
-    SQLALCHEMY_ECHO = False
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + tempfile.mkstemp()[-1]
-    
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///'
+
+class Production(BaseConfig):
+    LOGIN_DISABLED = False
+    SECRET_KEY = os.getenv('FLASK_SECRET_KEY', BaseConfig.SECRET_KEY)
+    JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', SECRET_KEY)
+    POTNANNY_PLUGIN_PATH = '/var/www/potnanny/plugins'
+    POTNANNY_LOG_PATH = '/var/www/potnanny/log'
