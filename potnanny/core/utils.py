@@ -1,5 +1,6 @@
 import os
 import re
+import copy
 import datetime
 import subprocess
 import logging
