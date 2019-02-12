@@ -1,12 +1,12 @@
 import json
 import hashlib
-from vesync_outlet import Vesync
 from sqlalchemy import (Column, Integer, String, Text, Boolean, Float,
         DateTime, ForeignKey, func)
 from sqlalchemy.orm import relationship
 from potnanny.core.database import Base, db_session
 from potnanny.core.schemas.outlet import GenericOutletSchema
 from potnanny.core.utils import subprocess_command
+from vesync_outlet import Vesync
 
 
 class OutletSetting(Base):

@@ -129,6 +129,7 @@ def load_plugins(path):
 
     return
 
+
 """
 Scan for all BLE devices.
 
