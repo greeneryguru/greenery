@@ -16,7 +16,7 @@ from potnanny.core.models import (Measurement, Sensor, Room, Action, Trigger,
     BlePluginBase, ActionPluginBase, PollSetting, OutletController,
     FutureOutletAction)
 from potnanny.core.utils import (eval_condition, load_plugins,
-    subprocess_command, parse_blescan_buffer, clean_blescan_output,)
+    subprocess_command, blescan_devices,)
 
 
 """
@@ -59,27 +59,6 @@ def main():
 
         if measurements:
             load_measurements(measurements)
-
-
-"""
-Scan for all BLE devices.
-
-params:
-    None
-
-returns:
-    a list of dicts, like: [{'name': NAME, 'address': ADDRESS}, ]
-"""
-def blescan_devices():
-    logger.debug("scanning BLE devices")
-    command = ['sudo', 'blescan']
-    rval, output, errors = subprocess_command(command, False)
-    if not rval:
-        buf = clean_blescan_output(output)
-        return parse_blescan_buffer(buf)
-    else:
-        logger.warning("blescan_devices(): {}".format(errors))
-        return None
 
 
 """

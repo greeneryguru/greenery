@@ -129,6 +129,26 @@ def load_plugins(path):
 
     return
 
+"""
+Scan for all BLE devices.
+
+params:
+    None
+
+returns:
+    a list of dicts, like: [{'name': NAME, 'address': ADDRESS}, ]
+"""
+def blescan_devices():
+    logger.debug("scanning BLE devices")
+    command = ['sudo', 'blescan']
+    rval, output, errors = subprocess_command(command, False)
+    if not rval:
+        buf = clean_blescan_output(output)
+        return parse_blescan_buffer(buf)
+    else:
+        logger.warning("blescan_devices(): {}".format(errors))
+        return None
+
 
 """
 Clean escape chars and hex chars from the output of the blescan cmd.
