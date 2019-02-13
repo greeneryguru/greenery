@@ -223,7 +223,7 @@ if __name__ == '__main__':
     elif args.environment == 'development':
         app_config = Development
     else:
-        raise RuntimeError("Must provide config")
+        raise RuntimeError("Must provide config environment")
 
     # init database
     init_engine(app_config.SQLALCHEMY_DATABASE_URI)

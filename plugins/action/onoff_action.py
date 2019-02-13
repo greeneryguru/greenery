@@ -1,7 +1,10 @@
 import json
+import logging
 from potnanny.core.models import Trigger, OutletController, ActionPluginBase
 from potnanny.core.database import db_session
 from potnanny.core.utils import eval_condition
+
+logger = logging.getLogger('potnanny.plugins.onoff_action')
 
 """
 TriggeredOnOffAction
@@ -53,6 +56,7 @@ class TriggeredOnOffAction(ActionPluginBase):
         a dict of action details, or None
     """
     def handle_measurement(self, parent, meas):
+        logger.debug("handling measurement {}, {}".format(parent, meas))
         now = datetime.datetime.utcnow().replace(second=0, microsecond=0)
         trigger = None
         if parent.triggers:
@@ -73,6 +77,7 @@ class TriggeredOnOffAction(ActionPluginBase):
 
 
         if eval_condition(meas.value, self.on_condition):
+            logger.debug("turning outlet '{}' ON".format(self.outlet))
             oc = OutletController()
             result = oc.turn_on(self.outlet)
             # create a trigger only if action was successful
@@ -83,6 +88,7 @@ class TriggeredOnOffAction(ActionPluginBase):
             return
 
         if eval_condition(meas.value, self.off_condition):
+            logger.debug("turning outlet '{}' OFF".format(self.outlet))
             oc = OutletController()
             result = oc.turn_off(self.outlet)
             if result and trigger and trigger.closed == None:

@@ -1,5 +1,6 @@
 import json
 import hashlib
+import logging
 from sqlalchemy import (Column, Integer, String, Text, Boolean, Float,
         DateTime, ForeignKey, func)
 from sqlalchemy.orm import relationship
@@ -8,6 +9,7 @@ from potnanny.core.schemas.outlet import GenericOutletSchema
 from potnanny.core.utils import subprocess_command
 from vesync_outlet import Vesync
 
+logger.getLogger(__name__)
 
 class OutletSetting(Base):
     __tablename__ = 'outlet_settings'
@@ -88,6 +90,7 @@ class FutureOutletAction(Base):
 
 class OutletController(object):
     def __init__(self, *args, **kwargs):
+        logger.debug("initializing outlet controller")
         self.vesync = None
         self.settings = None
 
@@ -121,6 +124,7 @@ class OutletController(object):
             if results:
                 outlets += GenericOutletSchema(many=True).load(results)
 
+        logger.debug("outlets found: '{}'".format(outlet))
         return outlets
 
 
@@ -133,6 +137,7 @@ class OutletController(object):
         True|False on failure
     """
     def turn_on(self, outlet):
+        logger.debug("turning outlet '{}' ON".format(outlet))
         return self.switch_outlet(outlet, 1)
 
 
@@ -145,6 +150,7 @@ class OutletController(object):
         True|False on failure
     """
     def turn_off(self, outlet):
+        logger.debug("turning outlet '{}' OFF".format(outlet))
         return self.switch_outlet(outlet, 0)
 
 
@@ -169,7 +175,7 @@ class OutletController(object):
             pw = self.settings.rf_pulse_width
             pin = self.settings.rf_tx_pin
 
-            rval, output, errors = subprocess_command(['/var/www/bin/rf_send',
+            rval, output, errors = subprocess_command(['/var/www/potnanny/bin/rf_send',
                 code, protocol, pw, pin])
 
             if rval:

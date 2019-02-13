@@ -41,5 +41,6 @@ class Production(BaseConfig):
     LOGIN_DISABLED = False
     SECRET_KEY = os.getenv('FLASK_SECRET_KEY', BaseConfig.SECRET_KEY)
     JWT_SECRET_KEY = os.getenv('JWT_SECRET_KEY', SECRET_KEY)
+
     POTNANNY_PLUGIN_PATH = '/var/www/potnanny/plugins'
-    POTNANNY_LOG_PATH = '/var/www/potnanny/log'
+    POTNANNY_LOG_PATH = '/var/log/potnanny'

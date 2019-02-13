@@ -1,10 +1,13 @@
 import re
+import logging
 
 from potnanny.core.models import BlePluginBase
 from btlewrap.bluepy import BluepyBackend
 
 import miflora
 from miflora.miflora_poller import MiFloraPoller
+
+logger = logging.getLogger('potnanny.plugin')
 
 
 """
@@ -28,7 +31,10 @@ class MifloraPlugin(BlePluginBase):
                 continue
 
             # poll our device
+            logger.debug("polling device {}".format(device))
+
             result = cls.poll_device(device)
+            logger.debug("result: {}".format(result))
             if result:
                 measurements.append(result)
 
@@ -55,13 +61,13 @@ class MifloraPlugin(BlePluginBase):
         }
 
         try:
-            poller = MiFloraPoller(device[0], BluepyBackend)
+            poller = MiFloraPoller(device['address'], BluepyBackend)
             for key, code in readings.items():
                 value = poller.parameter_value(code)
                 if value is not None:
                     data['measurements'][key] = value
-        except:
-            pass
+        except Exception:
+            logger.exception("Failed to poll device {}".format(device))
 
         if len(data['measurements']):
             return data

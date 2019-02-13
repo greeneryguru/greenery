@@ -1,4 +1,5 @@
 import re
+import logging
 
 from potnanny.core.models import BlePluginBase
 from btlewrap.bluepy import BluepyBackend
@@ -6,6 +7,7 @@ from btlewrap.bluepy import BluepyBackend
 import mitemp_bt
 from mitemp_bt.mitemp_bt_poller import MiTempBtPoller
 
+logger = logging.getLogger('potnanny.plugin')
 
 """
 Potnanny Plugin for the Xiaomi Mi BT temp/humidity sensor
@@ -28,7 +30,10 @@ class MiTempHumidityPlugin(BlePluginBase):
                 continue
 
             # poll our device
+            logger.debug("polling device {}".format(device))
+
             result = cls.poll_device(device)
+            logger.debug("result: {}".format(result))
             if result:
                 measurements.append(result)
 
@@ -53,13 +58,13 @@ class MiTempHumidityPlugin(BlePluginBase):
         }
 
         try:
-            poller = MiTempBtPoller(device[0], BluepyBackend)
+            poller = MiTempBtPoller(device['address'], BluepyBackend)
             for key, code in readings.items():
                 value = poller.parameter_value(code)
                 if value is not None:
                     data['measurements'][key] = value
-        except:
-            pass
+        except Exception:
+            logger.exception("Failed to poll device {}".format(device))
 
         if len(data['measurements']):
             return data
