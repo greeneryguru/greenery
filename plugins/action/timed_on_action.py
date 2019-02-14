@@ -1,8 +1,12 @@
 import json
+import logging
+import datetime
 from potnanny.core.models import (Trigger, OutletController, ActionPluginBase,
     FutureOutletAction)
 from potnanny.core.database import db_session
 from potnanny.core.utils import eval_condition
+
+logger = logging.getLogger('potnanny.plugins.timed_on_action')
 
 """
 TriggeredTimedOnAction

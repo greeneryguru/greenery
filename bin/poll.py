@@ -16,7 +16,7 @@ from potnanny.core.models import (Measurement, Sensor, Room, Action, Trigger,
     BlePluginBase, ActionPluginBase, PollSetting, OutletController,
     FutureOutletAction)
 from potnanny.core.utils import (eval_condition, load_plugins,
-    subprocess_command, blescan_devices,)
+    blescan_devices, rehydrate_plugin_instance)
 
 
 """
@@ -108,6 +108,7 @@ def load_measurements(data):
     logger.debug("loading measurements from {} sensors".format(len(data)))
 
     for d in data:
+        meas = None
         sensor = get_or_create_sensor(d)
         if not sensor:
             continue
@@ -120,8 +121,8 @@ def load_measurements(data):
                 'created': g_utcnow }
 
             try:
-                m = Measurement(**params)
-                db_session.add(m)
+                meas = Measurement(**params)
+                db_session.add(meas)
                 db_session.commit()
             except Exception:
                 logger.exception("create new Measurement failed")
@@ -136,9 +137,9 @@ def load_measurements(data):
                 continue
 
             for action in room.actions:
-                if m.type == action.measurement_type and (
+                if meas.type == action.measurement_type and (
                     action.sensor == 'any' or int(action.sensor) == sensor.id):
-                    handle_action(action, m)
+                    handle_action(action, meas)
                 else:
                     continue
 
@@ -156,12 +157,14 @@ return:
 
 """
 def handle_action(action, meas):
+    logger.debug("handling action {}".format(action))
+    logger.debug("action data: {}".format(action.data))
     data = json.loads(action.data)
     cls = data.pop('class')
 
     # create instance of the action plugin that will process this info
     plugin = rehydrate_plugin_instance(ActionPluginBase, cls, data)
-    plugin.handle_measurement(action, m)
+    plugin.handle_measurement(action, meas)
 
     return
 

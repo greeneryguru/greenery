@@ -60,8 +60,8 @@ as I document this, I wonder if it might be better to pickle the objects and
 store them in the db that way? I will consider this...
 
 params:
-    - the parent class the child instance inherits from. Usually, either
-      ActionPluginBase or BlePluginBase.
+    - the parent class the child instance inherits from. Usually either
+       ActionPluginBase or BlePluginBase.
     - the class name of the child we are rehydrating
     - init options for the child instance
 
@@ -87,7 +87,12 @@ params:
 returns:
     tuple (exit-code, stdout, stderr)
 """
-def subprocess_command(cmd, shell=False):
+def subprocess_cmd(cmd, shell=False):
+    # cast all values to str, because ints will cause errors
+    if type(cmd) is list:
+        cmd = [str(c) for c in cmd]
+
+    # with shell, we flatten to a str
     if shell and type(cmd) is list:
         cmd = " ".join(cmd)
 
@@ -141,8 +146,8 @@ returns:
 """
 def blescan_devices():
     logger.debug("scanning BLE devices")
-    command = ['sudo', 'blescan']
-    rval, output, errors = subprocess_command(command, False)
+    command = ['sudo', 'blescan', '-a']
+    rval, output, errors = subprocess_cmd(command, False)
     if not rval:
         buf = clean_blescan_output(output)
         return parse_blescan_buffer(buf)
@@ -221,6 +226,7 @@ def eval_condition(val, stmt):
         atoms = atoms[1:]
 
     oper, threshold = atoms
+    threshold = float(threshold)
 
     if oper == 'lt' and val < threshold:
         return True
