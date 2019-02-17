@@ -1,1 +1,1 @@
-from .api import bp as user_api
+from .api import bp

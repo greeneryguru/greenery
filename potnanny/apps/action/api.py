@@ -1,14 +1,14 @@
 from flask import Blueprint, request, url_for, jsonify
 from flask_restful import Api, Resource
-from potnanny.core.models import Action
-from potnanny.core.schemas import ActionSchema
-from potnanny.apps.base import CrudBase
+from potnanny_core.models import Action
+from .schema import ActionSchema
+from potnanny.crud import CrudInterface
 
 
 bp = Blueprint('action_api', __name__, url_prefix='/api/1.0/actions')
 # api = Api(bp, decorators=[csrf_protect.exempt])
 api = Api(bp)
-ifc = CrudBase(Action, ActionSchema)
+ifc = CrudInterface(Action, ActionSchema)
 
 
 class ActionListApi(Resource):

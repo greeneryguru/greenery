@@ -11,11 +11,11 @@ import datetime
 import argparse
 
 from potnanny.config import Production, Testing, Development
-from potnanny.core.database import db_session, init_db, init_engine
-from potnanny.core.models import (Measurement, Sensor, Room, Action, Trigger,
+from potnanny_core.database import db_session, init_db, init_engine, init_users, init_settings
+from potnanny_core.models import (Measurement, Sensor, Room, Action, Trigger,
     BlePluginBase, ActionPluginBase, PollSetting, OutletController,
     FutureOutletAction)
-from potnanny.core.utils import (eval_condition, load_plugins,
+from potnanny_core.utils import (eval_condition, load_plugins,
     blescan_devices, rehydrate_plugin_instance)
 
 
@@ -50,15 +50,19 @@ def main():
     load_plugins(os.path.join(app_config.POTNANNY_PLUGIN_PATH, 'action'))
 
     measurements = []
-    devices = blescan_devices()
-    if devices:
+
+    # collect measurements from know ble devices
+    ble_devices = blescan_devices()
+    if ble_devices:
         for cls in BlePluginBase.plugins:
-            results = cls.poll(devices)
+            time.sleep(0.1)
+
+            results = cls.poll(ble_devices)
             if results:
                 measurements += results
 
-        if measurements:
-            load_measurements(measurements)
+    if measurements:
+        load_measurements(measurements)
 
 
 """
@@ -71,6 +75,7 @@ returns:
     a Sensor object, None on error
 """
 def get_or_create_sensor(data):
+    time.sleep(0.1)
     obj = Sensor.query.filter_by(address=data['address']).first()
     if not obj:
         logger.debug("create new sensor from '{}'".format(data))
@@ -108,12 +113,14 @@ def load_measurements(data):
     logger.debug("loading measurements from {} sensors".format(len(data)))
 
     for d in data:
+        time.sleep(0.1)
         meas = None
         sensor = get_or_create_sensor(d)
         if not sensor:
             continue
 
         for k, v in d['measurements'].items():
+            time.sleep(0.1)
             params = {
                 'sensor_id': sensor.id,
                 'value': v,
@@ -163,8 +170,11 @@ def handle_action(action, meas):
     cls = data.pop('class')
 
     # create instance of the action plugin that will process this info
-    plugin = rehydrate_plugin_instance(ActionPluginBase, cls, data)
-    plugin.handle_measurement(action, meas)
+    try:
+        plugin = rehydrate_plugin_instance(ActionPluginBase, cls, data)
+        plugin.handle_measurement(action, meas)
+    except Exception:
+        logger.exception("failed to rehydrate '{}' object from data '{}'".format(cls, data))
 
     return
 
@@ -184,6 +194,7 @@ def handle_future_actions():
         oc = OutletController()
 
     for a in actions:
+        time.sleep(0.1)
         outlet = json.loads(a.outlet)
         if a.action == 'on':
             if oc.turn_on(outlet):
@@ -212,9 +223,12 @@ if __name__ == '__main__':
 
     # handle args
     parser = argparse.ArgumentParser(description='Potnanny measurement polling script')
-    parser.add_argument('--debug', action='store_true')
-    parser.add_argument('-e','--environment', default='production')
-    parser.add_argument('-f','--force', action='store_true')
+    parser.add_argument('--debug', action='store_true',
+        help='turn on debug messages.')
+    parser.add_argument('-e','--environment', default='production',
+        help='load settings for which environment. default=Production.')
+    parser.add_argument('-f','--force', action='store_true',
+        help='force run now, regardless of poll interval setting.')
     args = parser.parse_args()
 
     # config app environment
@@ -229,8 +243,14 @@ if __name__ == '__main__':
         raise RuntimeError("Must provide config environment")
 
     # init database
+    logger.debug('initializing db engine')
     init_engine(app_config.SQLALCHEMY_DATABASE_URI)
+    logger.debug('initializing db interface')
     init_db()
+    logger.debug('initializing system users')
+    init_users()
+    logger.debug('initializing system settings')
+    init_settings()
 
     # fine tune the logging
     if args.debug:
@@ -249,6 +269,7 @@ if __name__ == '__main__':
     handle_future_actions()
 
     # get poll interval settings from db
+    logger.debug('getting poll interval settings')
     pollcfg = PollSetting.query.first()
     if not pollcfg:
         pollcfg = PollSetting()

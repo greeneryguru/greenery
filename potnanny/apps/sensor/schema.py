@@ -1,13 +1,10 @@
 from marshmallow import Schema, fields
-import potnanny.core.schemas
-
 
 class SensorSchema(Schema):
     class META:
         strict = True
 
-    id = fields.Integer(
-                dump_only=True)
+    id = fields.Integer(dump_only=True)
     name = fields.Str(required=True)
     address = fields.Str(dump_only=True)
     model = fields.Str(dump_only=True)

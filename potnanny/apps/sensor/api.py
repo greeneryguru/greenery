@@ -1,9 +1,8 @@
 from flask import Blueprint, request, url_for, jsonify
 from flask_restful import Api, Resource
 from flask_jwt_extended import jwt_required
-
-from potnanny.core.schemas import SensorSchema
-from potnanny.core.models import Sensor
+from potnanny_core.models import Sensor
+from .schema import SensorSchema
 from potnanny.crud import CrudInterface
 
 

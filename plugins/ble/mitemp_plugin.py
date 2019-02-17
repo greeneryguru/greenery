@@ -1,7 +1,7 @@
 import re
 import logging
 
-from potnanny.core.models import BlePluginBase
+from potnanny_core.models import BlePluginBase
 from btlewrap.bluepy import BluepyBackend
 
 import mitemp_bt

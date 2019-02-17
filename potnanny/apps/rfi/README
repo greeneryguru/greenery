@@ -1,6 +1,0 @@
-Interface to the RF tx/rx functions.
-
-The SPI Interface is not yet enabled. For future use once the CC1101 Interface
-is complete and integrated.
-
-Jeff - 1/11/2019

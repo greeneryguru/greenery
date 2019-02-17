@@ -1,5 +1,4 @@
 from marshmallow import Schema, fields
-import potnanny.core.schemas
 import datetime
 
 class GrowSchema(Schema):

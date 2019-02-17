@@ -1,8 +1,8 @@
 from flask import Blueprint, request, url_for
 from flask_restful import Api, Resource
 from flask_jwt_extended import jwt_required
-from .models import User
-from .schemas import UserSchema
+from potnanny_core.models import User
+from .schema import UserSchema
 
 bp = Blueprint('user_api', __name__, url_prefix='/api/1.0/users')
 api = Api(bp)

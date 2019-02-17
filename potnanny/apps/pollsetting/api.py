@@ -1,14 +1,14 @@
 from flask import Blueprint, request, url_for, jsonify
 from flask_restful import Api, Resource
-from .models import PollSetting
-from potnanny.core.schemas import PollSettingSchema
-from potnanny.apps.base import CrudBase
+from potnanny_core.models import PollSetting
+from .schema import PollSettingSchema
+from potnanny.crud import CrudInterface
 
 bp = Blueprint('pollsetting_api', __name__, url_prefix='/api/1.0/pollsettings')
 api = Api(bp)
 
 
-ifc = CrudBase(PollSetting, PollSettingSchema)
+ifc = CrudInterface(PollSetting, PollSettingSchema)
 
 
 class PollSettingListApi(Resource):

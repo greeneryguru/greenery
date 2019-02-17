@@ -16,11 +16,11 @@ Poller code example:
   measurements = []
 
   all_devices = [
-    ('11:11:11:11:11', 'flower care'),
-    ('22:22:22:22:22', 'MJ_HT_V1'),
-    ('33:33:33:33:33', 'foo'),
-    ('44:44:44:44:44', 'bar'),
-    ('77:77:77:77:77', 'flower care'),
+    {'address': '11:11:11:11:11', 'name': 'flower care'},
+    {'address': '22:22:22:22:22', 'name': 'MJ_HT_V1'},
+    ('address': '33:33:33:3:33'),
+    ('address': '12:22:34:22:66'),
+    ('address': '77:77:77:77:77', 'name': 'flower care'),
   ]
 
   foreach cls in BlePluginBase.plugins:

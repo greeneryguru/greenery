@@ -1,9 +1,9 @@
-from setuptools import setup, find_packages
+from setuptools import setup
 
 setup(
     name='potnanny',
     version='0.2.0',
-    packages=find_packages(),
+    packages=['potnanny'],
     include_package_data=True,
     install_requires=[
         'requests',
@@ -13,9 +13,6 @@ setup(
         'flask',
         'flask-restful',
         'flask-jwt-extended',
-        'bluepy',
-        'miflora',
-        'mitemp-bt',
-        'vesync-outlet',
+        'potnanny-core'
     ],
 )

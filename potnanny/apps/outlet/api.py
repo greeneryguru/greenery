@@ -1,14 +1,13 @@
 from flask import Blueprint, request, current_app
 from flask_restful import Api, Resource
-from .models import RFOutlet, OutletController
-from potnanny.core.schemas import RFOutletSchema
-from potnanny.apps.base import CrudBase
+from potnanny_core.models import WirelessOutlet, OutletController
+from potnanny_core.schemas import WirelessOutletSchema
+from potnanny.crud import CrudInterface
 
 
 bp = Blueprint('outlet_api', __name__, url_prefix='/api/1.0/outlets')
-# api = Api(bp, decorators=[csrf_protect.exempt])
 api = Api(bp)
-ifc = CrudBase(RFOutlet, RFOutletSchema)
+ifc = CrudInterface(WirelessOutlet, WirelessOutletSchema)
 
 
 class OutletListApi(Resource):
@@ -20,7 +19,7 @@ class OutletListApi(Resource):
         return results, http_code
 
     def post(self):
-        data, errors = RFOutletSchema().load(request.get_json())
+        data, errors = WirelessOutletSchema().load(request.get_json())
         if errors:
             return errors, 400
 
@@ -40,7 +39,7 @@ class OutletApi(Resource):
         return ser, code
 
     def put(self, pk):
-        data, errors = RFOutletSchema().load(request.get_json())
+        data, errors = WirelessOutletSchema().load(request.get_json())
         if errors:
             return errors, 400
 

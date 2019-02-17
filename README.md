@@ -36,6 +36,9 @@ Start a new grow cycle in your room. Keep track of how many days the room has be
 At the end of the grow, download detailed history for your records.
 Compare previous grows to see if certain environmental changes made plants healthier and more productive, or not.
 
+## PLUGIN SYSTEM
+Easily add custom Actions or BLE Sensor scanners.
+
 ## COMPATIBILITY
 The following Pi devices with WiFi and BLE have been tested to work:
  - Raspberry Pi 3 (recommended)

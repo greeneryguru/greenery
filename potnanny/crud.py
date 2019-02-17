@@ -1,11 +1,10 @@
 from flask import current_app
-from potnanny.extensions import db
+from potnanny.core.database import db_session
 
 
 """
-Class that covers the generic CRUD calls, data serialization and validation, etc
+Class that handles the generic CRUD calls, data serialization and validation, etc
 Initialization objects are:
-    - the db interface
     - a class
     - the marshmallow schema class used to validate/serialize
 """

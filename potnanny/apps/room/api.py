@@ -2,8 +2,8 @@ from flask import Blueprint, request, url_for, jsonify
 from flask_restful import Api, Resource
 from flask_jwt_extended import jwt_required
 
-from potnanny.core.models import Room
-from potnanny.core.schemas import RoomSchema
+from potnanny_core.models import Room
+from .schema import RoomSchema
 from potnanny.crud import CrudInterface
 
 
@@ -12,7 +12,7 @@ api = Api(bp)
 ifc = CrudInterface(Room, RoomSchema)
 
 class RoomListApi(Resource):
-    @jwt_required
+#    @jwt_required
     def get(self):
         ser, err, code = ifc.get()
         if err:
@@ -20,7 +20,7 @@ class RoomListApi(Resource):
 
         return ser, code
 
-    @jwt_required
+#    @jwt_required
     def post(self):
         data, errors = RoomSchema().load(request.get_json())
         if errors:
@@ -34,7 +34,7 @@ class RoomListApi(Resource):
 
 
 class RoomApi(Resource):
-    @jwt_required
+#    @jwt_required
     def get(self, pk):
         ser, err, code = ifc.get(pk, ['environment','environment'])
         if err:
@@ -42,7 +42,7 @@ class RoomApi(Resource):
 
         return ser, code
 
-    @jwt_required
+#    @jwt_required
     def put(self, pk):
         data, errors = RoomSchema().load(request.get_json())
         if errors:
@@ -54,7 +54,7 @@ class RoomApi(Resource):
 
         return ser, code
 
-    @jwt_required
+#    @jwt_required
     def delete(self, pk):
         ser, err, code = ifc.delete(pk)
         if err:

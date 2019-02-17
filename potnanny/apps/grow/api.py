@@ -2,8 +2,8 @@ from flask import Blueprint, request, url_for, jsonify
 from flask_restful import Api, Resource
 from flask_jwt_extended import jwt_required
 
-from potnanny.core.models import Grow
-from potnanny.core.schemas import GrowSchema
+from potnanny_core.models import Grow
+from .schema import GrowSchema
 from potnanny.crud import CrudInterface
 
 
