@@ -6,7 +6,7 @@ import json
 import datetime
 import random
 import copy
-from potnanny.core.schemas import FutureActionSchema
+from from potnanny.apps.outlet.schemas import FutureOutletActionSchema
 
 
 class TestModels(unittest.TestCase):

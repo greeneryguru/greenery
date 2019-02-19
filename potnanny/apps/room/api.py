@@ -3,13 +3,14 @@ from flask_restful import Api, Resource
 from flask_jwt_extended import jwt_required
 
 from potnanny_core.models import Room
-from .schema import RoomSchema
+from .schemas import RoomSchema
 from potnanny.crud import CrudInterface
 
 
 bp = Blueprint('room_api', __name__, url_prefix='/api/1.0/rooms')
 api = Api(bp)
 ifc = CrudInterface(Room, RoomSchema)
+
 
 class RoomListApi(Resource):
 #    @jwt_required

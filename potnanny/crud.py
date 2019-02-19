@@ -1,5 +1,5 @@
 from flask import current_app
-from potnanny.core.database import db_session
+from potnanny_core.database import db_session
 
 
 """

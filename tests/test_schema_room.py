@@ -5,7 +5,7 @@ import unittest
 import json
 import datetime
 import random
-from potnanny.core.schemas import RoomSchema
+from potnanny.apps.room.schemas import RoomSchema
 
 
 class TestModels(unittest.TestCase):

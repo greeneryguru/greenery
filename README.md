@@ -10,8 +10,8 @@ Potnanny interfaces with inexpensive off-the-shelf components, allowing you to s
  - Wireless RF power outlets*.
  - _more devices coming soon_
 
-## RESPONSIVE WEB APP ##
-The Potnanny web app looks great on any sized screen, and is compatible with most browsers.
+## RESPONSIVE APP ##
+The Potnanny web app is compatible most browsers, and looks great on any sized screen.
 
 ## DASHBOARD AND GRAPHING
 Check the status of your room environments from the Dashboard view.
@@ -40,7 +40,7 @@ Compare previous grows to see if certain environmental changes made plants healt
 Easily add custom Actions or BLE Sensor scanners.
 
 ## COMPATIBILITY
-The following Pi devices with WiFi and BLE have been tested to work:
+The following Pi devices with WiFi and Bluetooth LE have been tested to work:
  - Raspberry Pi 3 (recommended)
  - Raspberry Pi Zero W
 

@@ -2,7 +2,6 @@ import json
 import copy
 import marshmallow
 from marshmallow import Schema, fields, validates, ValidationError
-import potnanny.core.schemas
 
 
 class ActionSchema(Schema):

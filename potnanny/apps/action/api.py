@@ -1,7 +1,7 @@
 from flask import Blueprint, request, url_for, jsonify
 from flask_restful import Api, Resource
 from potnanny_core.models import Action
-from .schema import ActionSchema
+from .schemas import ActionSchema
 from potnanny.crud import CrudInterface
 
 

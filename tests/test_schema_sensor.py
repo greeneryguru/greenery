@@ -5,7 +5,7 @@ import unittest
 import json
 import datetime
 import random
-from potnanny.core.schemas import SensorSchema
+from potnanny.apps.sensor.schemas import SensorSchema
 
 
 class TestModels(unittest.TestCase):

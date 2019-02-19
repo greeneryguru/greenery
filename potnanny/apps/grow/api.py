@@ -3,7 +3,7 @@ from flask_restful import Api, Resource
 from flask_jwt_extended import jwt_required
 
 from potnanny_core.models import Grow
-from .schema import GrowSchema
+from .schemas import GrowSchema
 from potnanny.crud import CrudInterface
 
 

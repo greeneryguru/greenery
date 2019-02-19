@@ -5,7 +5,7 @@ import unittest
 import json
 import datetime
 import random
-from potnanny.core.schemas import GrowSchema
+from potnanny.apps.grow.schemas import GrowSchema
 
 
 class TestModels(unittest.TestCase):

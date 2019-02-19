@@ -1,5 +1,4 @@
 from marshmallow import Schema, fields, validates, ValidationError
-from potnanny.core.models import MeasurementTypeMap
 import potnanny.core.schemas
 
 

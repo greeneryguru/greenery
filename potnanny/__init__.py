@@ -1,7 +1,7 @@
 from flask import Flask, current_app
 from .config import BaseConfig
-from .core.database import init_engine, init_db
 from .extensions import jwt
+from potnanny_core.database import init_engine, init_db
 
 
 __all__ = ['create_app']
@@ -30,15 +30,14 @@ def config_extensions(app):
 
 
 def config_api(app):
-
     from potnanny.apps.auth import bp as auth_api
     app.register_blueprint(auth_api)
 
-    from potnanny.apps.room import bp as room_api
-    app.register_blueprint(room_api)
-
     from potnanny.apps.user import bp as user_api
     app.register_blueprint(user_api)
+
+    from potnanny.apps.room import bp as room_api
+    app.register_blueprint(room_api)
 
     from potnanny.apps.sensor import bp as sensor_api
     app.register_blueprint(sensor_api)
@@ -51,3 +50,9 @@ def config_api(app):
 
     from potnanny.apps.outlet import bp as outlet_api
     app.register_blueprint(outlet_api)
+
+    from potnanny.apps.pollsetting import bp as pollsetting_api
+    app.register_blueprint(pollsetting_api)
+
+    from potnanny.apps.outletsetting import bp as outletsetting_api
+    app.register_blueprint(outletsetting_api)

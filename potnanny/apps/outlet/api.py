@@ -1,7 +1,7 @@
 from flask import Blueprint, request, current_app
 from flask_restful import Api, Resource
-from potnanny_core.models import WirelessOutlet, OutletController
-from potnanny_core.schemas import WirelessOutletSchema
+from potnanny_core.models import OutletController
+from potnanny_core.schemas import GenericOutletSchema
 from potnanny.crud import CrudInterface
 
 
@@ -11,13 +11,15 @@ ifc = CrudInterface(WirelessOutlet, WirelessOutletSchema)
 
 
 class OutletListApi(Resource):
+    # get all outlets available on this system
     def get(self):
         http_code = 200
         oc = OutletController()
-        results = oc.list_all()
+        results = oc.available_outlets()
 
         return results, http_code
 
+    # create new wireless outlet
     def post(self):
         data, errors = WirelessOutletSchema().load(request.get_json())
         if errors:
@@ -56,6 +58,20 @@ class OutletApi(Resource):
 
         return ser, code
 
+class OutletSwitchApi(Resource):
+    def post(self):
+        data, errors = GenericOutletSchema().load(request.get_json())
+        if errors:
+            return errors, 400
+
+        oc = OutletController()
+        result = oc.switch_outlet(data)
+        if result:
+            return data, 200
+        else:
+            return {'msg': 'failed to switch outlet'}, 400
+
 
 api.add_resource(OutletListApi, '')
 api.add_resource(OutletApi, '/<id>')
+api.add_resource(OutletSwitchApi, '/switch')

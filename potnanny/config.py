@@ -28,14 +28,17 @@ class BaseConfig(object):
     POTNANNY_PLUGIN_PATH = '../plugins'
     POTNANNY_LOG_PATH = '../log'
 
+
 class Development(BaseConfig):
     DEBUG = True
     SQLALCHEMY_ECHO = True
+
 
 class Testing(BaseConfig):
     TESTING = True
     WTF_CSRF_ENABLED = False
     SQLALCHEMY_DATABASE_URI = 'sqlite:///'
+
 
 class Production(BaseConfig):
     LOGIN_DISABLED = False

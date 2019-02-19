@@ -6,7 +6,7 @@ import json
 import datetime
 import random
 import copy
-from potnanny.core.schemas import ActionSchema
+from potnanny.apps.action.schemas import ActionSchema
 
 base = {
     "name": "test control",
