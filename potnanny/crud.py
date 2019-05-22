@@ -60,8 +60,8 @@ class CrudInterface(object):
     def create(self, data):
         http_code = 200
         obj = self._objclass(**data)
-        db.session.add(obj)
-        db.session.commit()
+        db_session.add(obj)
+        db_session.commit()
         serialized, errors = self._objschema().dump(obj)
 
         if errors:
@@ -92,7 +92,7 @@ class CrudInterface(object):
         for k,v in data.items():
             setattr(obj, k, v)
 
-        db.session.commit()
+        db_session.commit()
         serialized, errors = self._objschema().dump(obj)
         if errors:
             http_code = 400
@@ -108,6 +108,6 @@ class CrudInterface(object):
         if not obj:
             return(None, {"message": "object does not exist"}, 404)
 
-        db.session.delete(obj)
-        db.session.commit()
+        db_session.delete(obj)
+        db_session.commit()
         return("", None, 204)

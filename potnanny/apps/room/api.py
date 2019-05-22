@@ -4,64 +4,82 @@ from flask_jwt_extended import jwt_required
 
 from potnanny_core.models import Room
 from .schemas import RoomSchema
-from potnanny.crud import CrudInterface
-
 
 bp = Blueprint('room_api', __name__, url_prefix='/api/1.0/rooms')
 api = Api(bp)
-ifc = CrudInterface(Room, RoomSchema)
 
 
 class RoomListApi(Resource):
-#    @jwt_required
+    # @jwt_required
     def get(self):
-        ser, err, code = ifc.get()
-        if err:
-            return err, code
+        rooms = Room.query.all()
+        if not rooms:
+            return {"message": "no data"}, 404
 
-        return ser, code
+        serialized, errors = RoomSchema(many=True).dump(rooms)
+        if errors:
+            return errors, 400
 
-#    @jwt_required
+        return serialized, 200
+
+    # @jwt_required
     def post(self):
         data, errors = RoomSchema().load(request.get_json())
         if errors:
             return errors, 400
 
-        ser, err, code = ifc.create(data)
-        if err:
-            return err, code
+        room = Room(**data)
+        db_session.add(room)
+        db_session.commit()
+        serialized, errors = RoomSchema().dump(room)
+        if errors:
+            return errors, 400
 
-        return ser, code
+        return serialized, 200
 
 
 class RoomApi(Resource):
-#    @jwt_required
-    def get(self, pk):
-        ser, err, code = ifc.get(pk, ['environment','environment'])
-        if err:
-            return err, code
+    # @jwt_required
+    def get(self, pk, incl_env=True):
+        room = Room.query.get(pk)
+        if not room:
+            return {"message": "object does not exist"}, 404
 
-        return ser, code
+        serialized, errors = RoomSchema().dump(room)
+        if errors:
+            return errors, 400
 
-#    @jwt_required
+        if incl_env:
+            serialized['environment'] = room.environment()
+
+        return serialized, 200
+
+    # @jwt_required
     def put(self, pk):
         data, errors = RoomSchema().load(request.get_json())
         if errors:
             return errors, 400
 
-        ser, err, code = ifc.edit(pk, data)
-        if err:
-            return err, code
+        room = Room.query.get(pk)
+        if not room:
+            return {"message": "object does not exist"}, 404
 
-        return ser, code
+        db_session.commit()
+        serialized, errors = RoomSchema().dump(room)
+        if errors:
+            return errors, 400
 
-#    @jwt_required
+        return serialized, 200
+
+    # @jwt_required
     def delete(self, pk):
-        ser, err, code = ifc.delete(pk)
-        if err:
-            return err, code
+        room = Room.query.get(pk)
+        if not room:
+            return {"message": "object does not exist"}, 404
 
-        return ser, code
+        db_session.delete(room)
+        db_session.commit()
+        return "", 204
 
 
 api.add_resource(RoomListApi, '')

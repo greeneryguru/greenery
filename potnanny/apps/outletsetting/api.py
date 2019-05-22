@@ -5,7 +5,7 @@ from .schemas import OutletSettingSchema
 from potnanny.crud import CrudInterface
 
 
-bp = Blueprint('outlet_api', __name__, url_prefix='/api/1.0/outletsetting')
+bp = Blueprint('outletsetting_api', __name__, url_prefix='/api/1.0/outletsettings')
 api = Api(bp)
 ifc = CrudInterface(OutletSetting, OutletSettingSchema)
 

@@ -2,14 +2,14 @@ from flask import Blueprint, request, url_for
 from flask_restful import Api, Resource
 from flask_jwt_extended import jwt_required
 from potnanny_core.models import User
-from .schema import UserSchema
+from .schemas import UserSchema
 
 bp = Blueprint('user_api', __name__, url_prefix='/api/1.0/users')
 api = Api(bp)
 
 class UserListApi(Resource):
     # GET list of all users
-    @jwt_required
+    # @jwt_required
     def get(self):
         results = User.query.all()
         if not results:
@@ -22,7 +22,7 @@ class UserListApi(Resource):
         return data, 200
 
     # POST create a new user
-    @jwt_required
+    # @jwt_required
     def post(self):
         password = request.get_json()['password']
         if not password or password == "":
@@ -46,7 +46,7 @@ class UserListApi(Resource):
 
 class UserApi(Resource):
     # GET an existing user
-    @jwt_required
+    # @jwt_required
     def get(self, pk):
         obj = User.query.get(pk)
         data, errors = UserSchema().dump(obj)
@@ -56,7 +56,7 @@ class UserApi(Resource):
         return data, 200
 
     # EDIT an existing user
-    @jwt_required
+    # @jwt_required
     def put(self, pk):
         obj = User.query.get(pk)
         data, errors = UserSchema().load(request.get_json())
@@ -74,7 +74,7 @@ class UserApi(Resource):
         return data, 200
 
     # DELETE an existing user
-    @jwt_required
+    # @jwt_required
     def delete(self, pk):
         obj = User.query.get(pk)
         if not obj:

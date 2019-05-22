@@ -9,59 +9,60 @@ from potnanny.crud import CrudInterface
 bp = Blueprint('sensor_api', __name__, url_prefix='/api/1.0/sensors')
 # api = Api(bp, decorators=[csrf_protect.exempt])
 api = Api(bp)
-ifc = CrudInterface(Sensor, SensorSchema)
-
 
 class SensorListApi(Resource):
-    @jwt_required
+    # @jwt_required
     def get(self):
-        ser, err, code = ifc.get()
-        if err:
-            return err, code
+        sensors = Sensor.query.all()
+        if not sensors:
+            return {"message": "no data"}, 404
 
-        return ser, code
-
-    @jwt_required
-    def post(self):
-        data, errors = SensorSchema().load(request.get_json())
+        serialized, errors = SensorSchema(many=True).dump(sensors)
         if errors:
             return errors, 400
 
-        ser, err, code = ifc.create(data)
-        if err:
-            return err, code
-
-        return ser, code
+        return serialized, 200
 
 
 class SensorApi(Resource):
-    @jwt_required
+    # @jwt_required
     def get(self, pk):
-        ser, err, code = ifc.get(pk, ['measurement_codes','measurement_codes'])
-        if err:
-            return err, code
+        sensor = Sensor.query.get(pk)
+        if not sensor:
+            return {"message": "object does not exist"}, 404
 
-        return ser, code
+        serialized, errors = SensorSchema().dump(room)
+        if errors:
+            return errors, 400
 
-    @jwt_required
+        return serialized, 200
+
+    # @jwt_required
     def put(self, pk):
         data, errors = SensorSchema().load(request.get_json())
         if errors:
             return errors, 400
 
-        ser, err, code = ifc.edit(pk, data)
-        if err:
-            return err, code
+        sensor = Sensor.query.get(pk)
+        if not sensor:
+            return {"message": "object does not exist"}, 404
 
-        return ser, code
+        db_session.commit()
+        serialized, errors = SensorSchema().dump(sensor)
+        if errors:
+            return errors, 400
 
-    @jwt_required
+        return serialized, 200
+
+    # @jwt_required
     def delete(self, pk):
-        ser, err, code = ifc.delete(pk)
-        if err:
-            return err, code
+        sensor = Sensor.query.get(pk)
+        if not sensor:
+            return {"message": "object does not exist"}, 404
 
-        return ser, code
+        db_session.delete(sensor)
+        db_session.commit()
+        return "", 204
 
 
 api.add_resource(SensorListApi, '')
