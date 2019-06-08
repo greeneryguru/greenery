@@ -9,7 +9,7 @@
 | /rooms/:id    | PUT       | edit room details  | id=INT(required) | name=STR(required)  |
 | /rooms/:id    | DELETE    | delete room        | id=INT(required) | none |
 | /rooms/:id/sensors | GET    |  get list of sensors assigned to room  | id=[integer](required) | none |
-| /rooms/:id/overview | GET    |  get status/environment overview of room  | id=[integer](required) | none |
+| /rooms/:id/read | GET    |  get environment readings for room  | id=[integer](required) | none |
 
 
 ## Sensors
@@ -28,13 +28,13 @@
 | ------------- | --------- | ------------ | ---------- | ---- |
 | /outlets      | GET       | get list of outlets  | none  | none |
 | /outlets      | POST      | create new outlet    | none  | name=STR(required), on_code=STR(required), off_code=STR(required), type=STR('wireless', required) |
-| /outlets/:id  | GET       | get outlet details   | id=INT(required) | none |
-| /outlets/:id  | PUT       | edit outlet details  | id=INT(required) | name=STR(required)  |
-| /outlets/:id  | DELETE    | delete outlet        | id=INT(required) | none |
-| /outlets/:id/switch  | POST    | switch outlet on or off        | id=INT(required) | state=INT(0|1 required) |
+| /outlets/:id  | GET       | get outlet details   | id=STR(required) | none |
+| /outlets/:id  | PUT       | edit outlet details  | id=STR(required) | name=STR(required) |
+| /outlets/:id  | DELETE    | delete outlet        | id=STR(required) | none |
+| /outlets/:id/switch  | POST    | switch outlet on or off | id=STR(required) | state=INT(0|1 required) |
 
 
 ## RF Interface
 | URL           | Method    | Description  | Parameters | Data |
 | ------------- | --------- | ------------ | ---------- | ---- |
-| /rfi/scan     | GET       | scan rf interface for transmit codes  | none  | none |
+| /rf/scan     | GET       | scan rf interface for transmit codes  | none  | none |

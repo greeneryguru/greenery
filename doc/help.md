@@ -14,8 +14,8 @@ things grouped together, such as Bluetooth Sensors, Grow Cycles, and Actions.
 
 ### Sensors
 The following Bluetooth LE devices are currently supported.
- - [Xiaomi Mi Flora soil sensors](https://miot-global.com/sockets-and-sensors/xiaomi-huahuacaocao-flower-care-smart-monitor/) (senses temperature, soil-moisture, ambient-light, soil-conductivity(EC))
- - [Xiaomi Mi BT Thermometer](https://www.xiaomistore.pk/mi-bluetooth-temperature-humidity-monitor.html) (senses temperature, humidity)
+ - [Xiaomi Mi Flora soil sensors](https://miot-global.com/sockets-and-sensors/xiaomi-huahuacaocao-flower-care-smart-monitor/) (collects temperature, soil-moisture, ambient-light, soil-conductivity(EC))
+ - [Xiaomi Mi BT Thermometer](https://www.xiaomistore.pk/mi-bluetooth-temperature-humidity-monitor.html) (collects temperature, humidity)
 
  _Support for more devices is in progress_
 
@@ -37,7 +37,7 @@ for each plugin. But, in general, all Actions share these basic attributes.
    * humidity
    * soil-moisture
 
- - **sensor**: Declare if the Action will activate based on measurements from only one particular sensor, or any sensor in the room.
+ - **sensor**: Declare if the Action will activate based on measurements from only one particular sensor, or any sensor, in the room.
 
  - **trigger thresholds**: These define when an Action will trigger (activate or deactivate), based on measurements received from sensors. For instance, if you wanted to keep the room humidity between 50-55%, a Triggered-On/Off Action would be defined with the following trigger thresholds:
    * "If value is less than 51, turn outlet called 'humidifier' ON"
@@ -51,5 +51,6 @@ Potnanny currently supports the Etekcity Vesync wifi power outlets. We like thes
 Before integrating your Vesync outlets into Potnanny, you should first sign up for an account with Vesync. Then discover and configure the devices using the native VesyncOutlet mobile app.
 
 #### RF Wireless
-Potnanny also supports control of RF Wireless outlets. These can provide more reliable control over power outlets if you have weak or intermittent wifi support.
+Potnanny also supports control of RF Wireless outlets. These can provide more reliable control over power outlets if you have weak or intermittent wifi signal. Also, your Actions and Schedules will keep working, in the event of an internet outage.
+
 However, this requires technical expertise with electronics (and, possibly, soldering), as you will need to connect 433Mhz/315Mhz transmit and receive modules to your raspberry pi.

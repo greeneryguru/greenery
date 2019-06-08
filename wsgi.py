@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
-from potnanny import create_app
-from potnanny.config import Production
+from potnanny_api import create_app
+from potnanny_api.config import Production
 app = create_app(Production)
 
 if __name__ == '__main__':

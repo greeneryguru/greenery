@@ -1,0 +1,21 @@
+SCHEDULE IFC
+============
+Need a more simplified ScheduleOnOff object. current one is too complex
+and hard to manage from api.
+
+{
+  id: 1,
+  name: 'foo',
+  room: 9,
+  outlet: {},
+  days: 127,
+  is_active: 1,
+  on: {
+    hour: 0,
+    minute: 0,
+  },
+  off: {
+    hour: 0,
+    minute: 0
+  }
+}
