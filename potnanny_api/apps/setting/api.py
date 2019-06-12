@@ -14,7 +14,8 @@ api = Api(bp)
 
 
 class SettingListApi(Resource):
-    # @jwt_required
+
+    @jwt_required
     def get(self):
         data = []
         possibles = ['polling_interval', 'temperature_display',
@@ -36,7 +37,8 @@ class SettingListApi(Resource):
 
 
 class SettingApi(Resource):
-    # @jwt_required
+
+    @jwt_required
     def get(self, name):
         obj = None
         serialized = None
@@ -47,28 +49,28 @@ class SettingApi(Resource):
             if not obj:
                 return {"message": "object not found"}, 404
 
-            serialized, errors = PollingIntervalSchema().dump(json.loads(obj.data))
+            serialized, errors = PollingIntervalSchema().load(json.loads(obj.data))
 
         elif name == 'temperature_display':
             obj = TemperatureDisplay.get()
             if not obj:
                 return {"message": "object not found"}, 404
 
-            serialized, errors = TemperatureDisplaySchema().dump(json.loads(obj.data))
+            serialized, errors = TemperatureDisplaySchema().load(json.loads(obj.data))
 
         elif name == 'primitive_wireless':
             obj = PrimitiveWirelessSetting.get()
             if not obj:
                 return {"message": "object not found"}, 404
 
-            serialized, errors = PrimitiveWirelessSettingSchema().dump(json.loads(obj.data))
+            serialized, errors = PrimitiveWirelessSettingSchema().load(json.loads(obj.data))
 
         elif name == 'vesync_account':
             obj = VesyncAccount.get()
             if not obj:
                 return {"message": "object not found"}, 404
 
-            serialized, errors = VesyncAccountSchema().dump(json.loads(obj.data))
+            serialized, errors = VesyncAccountSchema().load(json.loads(obj.data))
 
         else:
             return {"message": "Unexpected setting type"}, 404
@@ -80,7 +82,7 @@ class SettingApi(Resource):
         return serialized, 200
 
 
-    # @jwt_required
+    @jwt_required
     def put(self, name):
         data = None
         errors = None
@@ -114,9 +116,6 @@ class SettingApi(Resource):
             return {"message": "Unexpected setting type"}, 404
 
 
-
-
-
         data, errors = SensorSchema().load(request.get_json())
         if errors:
             return errors, 400
@@ -132,7 +131,7 @@ class SettingApi(Resource):
 
         return serialized, 200
 
-    # @jwt_required
+    @jwt_required
     def delete(self, name):
         obj = Keychain.query.filter_by(name=name).first()
         if obj:

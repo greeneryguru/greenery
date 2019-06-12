@@ -12,6 +12,8 @@ api = Api(bp)
 ifc = CrudInterface(db_session, Grow, GrowSchema)
 
 class GrowListApi(Resource):
+
+    @jwt_required
     def get(self):
         ser, err, code = ifc.get()
         if err:
@@ -19,6 +21,7 @@ class GrowListApi(Resource):
 
         return ser, code
 
+    @jwt_required
     def post(self):
         data, errors = GrowSchema().load(request.get_json())
         if errors:
@@ -32,6 +35,8 @@ class GrowListApi(Resource):
 
 
 class GrowApi(Resource):
+
+    @jwt_required
     def get(self, pk):
         ser, err, code = ifc.get(pk)
         if err:
@@ -39,6 +44,7 @@ class GrowApi(Resource):
 
         return ser, code
 
+    @jwt_required
     def put(self, pk):
         data, errors = GrowSchema().load(request.get_json())
         if errors:
@@ -50,6 +56,7 @@ class GrowApi(Resource):
 
         return ser, code
 
+    @jwt_required
     def delete(self, pk):
         ser, err, code = ifc.delete(pk)
         if err:

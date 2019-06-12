@@ -11,6 +11,7 @@ oc = OutletController()
 class OutletListApi(Resource):
     """Class to interface with Generic Power Outlets."""
 
+    @jwt_required
     def get(self):
         """Get list of all available outlets."""
 
@@ -24,6 +25,7 @@ class OutletListApi(Resource):
 
         return data, 200
 
+    @jwt_required
     def post(self):
         """Create a new wireless outlet."""
 
@@ -41,6 +43,7 @@ class OutletListApi(Resource):
 class OutletApi(Resource):
     """Class to Interface with single Generic Power Outlet."""
 
+    @jwt_required
     def get(self, id):
         """
         Get details of Outlet with id.
@@ -57,7 +60,7 @@ class OutletApi(Resource):
 
         return outlet, 200
 
-
+    @jwt_required
     def put(self, pk):
         """
         Edit details of a Wireless Outlet with id.
@@ -89,7 +92,7 @@ class OutletApi(Resource):
 
         return data, 200
 
-
+    @jwt_required
     def delete(self, pk):
         """
         Delete a Wireless Outlet with id.
@@ -113,6 +116,7 @@ class OutletApi(Resource):
 class OutletSwitchApi(Resource):
     """Class to switch outlets ON or OFF."""
 
+    @jwt_required
     def post(self):
         """Accept post data to switch outlet state to 1 (on) or 0 (off)."""
 

@@ -46,7 +46,7 @@ class UserListApi(Resource):
 
 class UserApi(Resource):
     # GET an existing user
-    # @jwt_required
+    @jwt_required
     def get(self, pk):
         obj = User.query.get(pk)
         data, errors = UserSchema().dump(obj)
@@ -56,7 +56,7 @@ class UserApi(Resource):
         return data, 200
 
     # EDIT an existing user
-    # @jwt_required
+    @jwt_required
     def put(self, pk):
         obj = User.query.get(pk)
         data, errors = UserSchema().load(request.get_json())
@@ -74,7 +74,7 @@ class UserApi(Resource):
         return data, 200
 
     # DELETE an existing user
-    # @jwt_required
+    @jwt_required
     def delete(self, pk):
         obj = User.query.get(pk)
         if not obj:
@@ -85,5 +85,5 @@ class UserApi(Resource):
         return "", 204
 
 
-api.add_resource(UserListApi, '')
+# api.add_resource(UserListApi, '')
 api.add_resource(UserApi, '/<int:pk>')

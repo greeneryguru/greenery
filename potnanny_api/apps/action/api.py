@@ -15,6 +15,7 @@ ifc = CrudInterface(db_session, Action, ActionSchema)
 class ActionListApi(Resource):
     """Class to interface with Actions."""
 
+    @jwt_required
     def get(self):
         """Get list of all actions."""
 
@@ -24,6 +25,7 @@ class ActionListApi(Resource):
 
         return ser, code
 
+    @jwt_required
     def post(self):
         """Post/Edit Action."""
 
@@ -39,6 +41,8 @@ class ActionListApi(Resource):
 
 
 class ActionApi(Resource):
+
+    @jwt_required
     def get(self, pk):
         ser, err, code = ifc.get(pk)
         if err:
@@ -46,6 +50,7 @@ class ActionApi(Resource):
 
         return ser, code
 
+    @jwt_required
     def put(self, pk):
         data, errors = ActionSchema().load(request.get_json())
         if errors:
@@ -57,6 +62,7 @@ class ActionApi(Resource):
 
         return ser, code
 
+    @jwt_required
     def delete(self, pk):
         ser, err, code = ifc.delete(pk)
         if err:

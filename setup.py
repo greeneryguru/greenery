@@ -2,10 +2,10 @@ from setuptools import setup
 
 setup(
     name='potnanny-api',
-    version='0.2.2',
+    version='0.2.3',
     packages=['potnanny_api'],
     include_package_data=True,
-    description='Part of the PotNanny greenhouse controller application. Contains Flask REST API',
+    description='Part of the Potnanny greenhouse controller application. Contains Flask REST API',
     author='Jeff Leary',
     author_email='potnanny@gmail.com',
     url='https://github.com/jeffleary00/potnanny-core',
@@ -17,6 +17,6 @@ setup(
         'flask',
         'flask-restful',
         'flask-jwt-extended',
-        'potnanny-core==0.2.2',
+        'potnanny-core==0.2.3',
     ],
 )
