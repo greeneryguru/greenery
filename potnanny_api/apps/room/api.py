@@ -92,7 +92,7 @@ class RoomLightApi(Resource):
             data, errors = RoomLightManagerSchema().load(mgr)
             if errors:
                 return errors, 400
-            return
+            else:
                 return data, 200
         except ValueError:
             return {'message': 'Unexpected error'}, 400
@@ -104,7 +104,7 @@ class RoomLightApi(Resource):
             data, errors = RoomLightManagerSchema().load(request.get_json())
             if errors:
                 return errors, 400
-            return
+            else:
                 return data, 200
         except ValueError:
             return {'message': 'Room with id {} not found'.format(pk)}, 404
