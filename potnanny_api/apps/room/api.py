@@ -15,7 +15,7 @@ ifc = CrudInterface(db_session, Room, RoomSchema)
 
 class RoomListApi(Resource):
 
-    @jwt_required
+    # @jwt_required
     def get(self):
         ser, err, code = ifc.get()
         if err:
@@ -23,7 +23,7 @@ class RoomListApi(Resource):
 
         return ser, code
 
-    @jwt_required
+    # @jwt_required
     def post(self):
         data, errors = RoomSchema().load(request.get_json())
         if errors:
@@ -38,7 +38,7 @@ class RoomListApi(Resource):
 
 class RoomApi(Resource):
 
-    @jwt_required
+    # @jwt_required
     def get(self, pk):
         ser, err, code = ifc.get(pk)
         if err:
@@ -46,7 +46,7 @@ class RoomApi(Resource):
 
         return ser, code
 
-    @jwt_required
+    # @jwt_required
     def put(self, pk):
         data, errors = RoomSchema().load(request.get_json())
         if errors:
@@ -68,7 +68,7 @@ class RoomApi(Resource):
 
 
 class RoomLightApi(Resource):
-    @jwt_required
+    # @jwt_required
     def get(self, pk):
         try:
             mgr = RoomLightManager(pk)
@@ -80,7 +80,7 @@ class RoomLightApi(Resource):
         except ValueError:
             return {'message': 'Room with id {} not found'.format(pk)}, 404
 
-    @jwt_required
+    # @jwt_required
     def post(self, pk):
         try:
             outlet, errors = GenericOutletSchema().load(request.get_json())
@@ -97,7 +97,7 @@ class RoomLightApi(Resource):
         except ValueError:
             return {'message': 'Unexpected error'}, 400
 
-    @jwt_required
+    # @jwt_required
     def put(self, pk):
         try:
             mgr = RoomLightManager(pk)
@@ -120,7 +120,7 @@ class RoomLightApi(Resource):
 
         return ser, code
 
-    @jwt_required
+    # @jwt_required
     def delete(self, pk):
         ser, err, code = ifc.delete(pk)
         if err:
