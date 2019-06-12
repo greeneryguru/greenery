@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify, make_response, redirect
 from flask_jwt_extended import (
     jwt_required, create_access_token, jwt_refresh_token_required,
     create_refresh_token, get_jwt_identity )
-from potnanny_core.models import User
+from potnanny_core.models.user import User
 
 
 bp = Blueprint('auth_api', __name__, url_prefix='/token')
