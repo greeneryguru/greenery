@@ -1,5 +1,7 @@
 from flask import Blueprint, request, current_app
 from flask_restful import Api, Resource
+from flask_jwt_extended import jwt_required
+
 from potnanny_core.models.outlet import OutletController, Outlet
 from potnanny_core.models.wireless import WirelessInterface
 from potnanny_core.schemas.outlet import GenericOutletSchema, OutletSchema

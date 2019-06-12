@@ -1,6 +1,8 @@
 import json
 from flask import Blueprint, request, current_app
 from flask_restful import Api, Resource
+from flask_jwt_extended import jwt_required
+
 from potnanny_core.models.setting import (PollingInterval, TemperatureDisplay,
     VesyncAccount, PrimitiveWirelessSetting)
 from potnanny_core.schemas.keychain import KeychainSchema

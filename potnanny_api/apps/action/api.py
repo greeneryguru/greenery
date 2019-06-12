@@ -1,5 +1,6 @@
 from flask import Blueprint, request, url_for, jsonify
 from flask_restful import Api, Resource
+from flask_jwt_extended import jwt_required
 
 from potnanny_core.models.action import Action
 from potnanny_core.schemas.action import ActionSchema
