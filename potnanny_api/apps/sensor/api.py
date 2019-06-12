@@ -135,8 +135,8 @@ class SensorChartApi(Resource):
 
         chart['options']['legend']['display'] = True
         chart['options']['scales']['xAxes'][0]['display'] = True
-
-    return chart, 200
+        
+        return chart, 200
 
 
 api.add_resource(SensorListApi, '')
