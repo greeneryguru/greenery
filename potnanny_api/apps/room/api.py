@@ -75,7 +75,7 @@ class RoomLightApi(Resource):
             data, errors = RoomLightManagerSchema().load(mgr)
             if errors:
                 return errors, 400
-            return
+            else:
                 return data, 200
         except ValueError:
             return {'message': 'Room with id {} not found'.format(pk)}, 404

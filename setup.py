@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='potnanny-api',
-    version='0.2.4',
+    version='0.2.5',
     packages=['potnanny_api'],
     include_package_data=True,
     description='Part of the Potnanny greenhouse controller application. Contains Flask REST API',
