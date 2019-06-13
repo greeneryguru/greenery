@@ -31,6 +31,8 @@ class Development(BaseConfig, CoreDevelopment):
 class Testing(BaseConfig, CoreTesting):
     TESTING = True
     WTF_CSRF_ENABLED = False
+    JWT_HEADER_TYPE = 'Bearer'
+    JWT_BLACKLIST_ENABLED = False
 
 
 class Production(BaseConfig, CoreProduction):

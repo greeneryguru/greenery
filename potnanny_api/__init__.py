@@ -27,6 +27,7 @@ def config_database(app):
 
 def config_extensions(app):
     jwt.init_app(app)
+    jwt._set_error_handler_callbacks(app)
     # csrf.init_app(app)
 
 
