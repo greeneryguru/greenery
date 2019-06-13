@@ -13,8 +13,8 @@ def create_app(config=Development):
     app.config.from_object(config)
     with app.app_context():
         config_database(app)
-        config_extensions(app)
         config_api(app)
+        config_extensions(app)
 
     return app
 
@@ -40,7 +40,7 @@ def config_api(app):
     from potnanny_api.apps.room import bp as room_api
     app.register_blueprint(room_api)
 
-    from potnanny_api.apps.sensor import api as sensor_api
+    from potnanny_api.apps.sensor import bp as sensor_api
     app.register_blueprint(sensor_api)
 
     from potnanny_api.apps.grow import bp as grow_api
