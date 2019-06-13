@@ -30,31 +30,6 @@ def config_extensions(app):
     jwt._set_error_handler_callbacks(app)
     # csrf.init_app(app)
 
-
-@jwt.expired_token_loader
-def my_expired_token_callback(expired_token):
-    token_type = expired_token['type']
-    return jsonify({
-        'status': 401,
-        'msg': 'The {} token has expired'.format(token_type)
-    }), 401
-
-
-@jwt.invalid_token_loader
-def my_invalid_token_callback(msg):
-    return jsonify({
-        'status': 401,
-        'msg': 'Invalid token: {}'.format(msg)
-    }), 401
-
-@jwt.unauthorized_loader
-def my_unauthorized_callback(msg):
-    return jsonify({
-        'status': 401,
-        'msg': 'Unauthorized: {}'.format(msg)
-    }), 401
-
-
 def config_api(app):
     from potnanny_api.apps.auth import bp as auth_api
     app.register_blueprint(auth_api)
@@ -65,7 +40,7 @@ def config_api(app):
     from potnanny_api.apps.room import bp as room_api
     app.register_blueprint(room_api)
 
-    from potnanny_api.apps.sensor import bp as sensor_api
+    from potnanny_api.apps.sensor import api as sensor_api
     app.register_blueprint(sensor_api)
 
     from potnanny_api.apps.grow import bp as grow_api

@@ -1,1 +1,1 @@
-from .api import bp
+from .api import bp, api
