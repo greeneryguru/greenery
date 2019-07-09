@@ -3,12 +3,12 @@ from flask import Blueprint, request, current_app
 from flask_restful import Api, Resource
 from flask_jwt_extended import jwt_required
 
-from potnanny_core.models.setting import (PollingInterval, TemperatureDisplay,
-    VesyncAccount, PrimitiveWirelessSetting)
 from potnanny_core.schemas.keychain import KeychainSchema
+from potnanny_core.models.setting import (PollingInterval, TemperatureDisplay,
+    VesyncAccount, PrimitiveWirelessSetting, TimeDisplay)
 from potnanny_core.schemas.setting import (PollingIntervalSchema,
     TemperatureDisplaySchema, PrimitiveWirelessSettingSchema,
-    VesyncAccountSchema)
+    VesyncAccountSchema, TimeDisplaySchema)
 
 
 bp = Blueprint('settings_api', __name__, url_prefix='/api/1.0/settings')
@@ -17,11 +17,11 @@ api = Api(bp)
 
 class SettingListApi(Resource):
 
-    @jwt_required
+    # @jwt_required
     def get(self):
         data = []
         possibles = ['polling_interval', 'temperature_display',
-            'primitive_wireless', 'vesync_account']
+            'primitive_wireless', 'vesync_account', 'time_display']
 
         keys = Keychain.query.all()
         if len(keys) < 1:
@@ -40,7 +40,7 @@ class SettingListApi(Resource):
 
 class SettingApi(Resource):
 
-    @jwt_required
+    # @jwt_required
     def get(self, name):
         obj = None
         serialized = None
@@ -60,6 +60,13 @@ class SettingApi(Resource):
 
             serialized, errors = TemperatureDisplaySchema().load(json.loads(obj.data))
 
+        elif name == 'time_display':
+            obj = TimeDisplay.get()
+            if not obj:
+                return {"message": "object not found"}, 404
+
+            serialized, errors = TimeDisplaySchema().load(json.loads(obj.data))
+
         elif name == 'primitive_wireless':
             obj = PrimitiveWirelessSetting.get()
             if not obj:
@@ -77,14 +84,13 @@ class SettingApi(Resource):
         else:
             return {"message": "Unexpected setting type"}, 404
 
-
         if errors:
             return errors, 400
 
         return serialized, 200
 
 
-    @jwt_required
+    # @jwt_required
     def put(self, name):
         data = None
         errors = None
@@ -108,6 +114,13 @@ class SettingApi(Resource):
 
             serialized, errors = TemperatureDisplaySchema().dump(json.loads(obj.data))
 
+        elif name == 'time_display':
+            obj = TimeDisplay.get()
+            if not obj:
+                return {"message": "object not found"}, 404
+
+            serialized, errors = TimeDisplaySchema().dump(json.loads(obj.data))
+
         elif name == 'primitive_wireless':
             obj = PrimitiveWirelessSetting.get()
             if not obj:
@@ -118,22 +131,7 @@ class SettingApi(Resource):
             return {"message": "Unexpected setting type"}, 404
 
 
-        data, errors = SensorSchema().load(request.get_json())
-        if errors:
-            return errors, 400
-
-        sensor = Sensor.query.get(pk)
-        if not sensor:
-            return {"message": "object does not exist"}, 404
-
-        db_session.commit()
-        serialized, errors = SensorSchema().dump(sensor)
-        if errors:
-            return errors, 400
-
-        return serialized, 200
-
-    @jwt_required
+    # @jwt_required
     def delete(self, name):
         obj = Keychain.query.filter_by(name=name).first()
         if obj:
@@ -144,4 +142,4 @@ class SettingApi(Resource):
 
 
 api.add_resource(SettingListApi, '/settings')
-api.add_resource(SettingApi, '/settings/<key>')
+api.add_resource(SettingApi, '/settings/<name>')
