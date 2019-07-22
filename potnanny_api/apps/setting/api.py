@@ -25,7 +25,7 @@ class SettingListApi(Resource):
 
         keys = Keychain.query.all()
         if len(keys) < 1:
-            return {"message": "no data"}, 404
+            return {"msg": "no data"}, 404
 
         for obj in keys:
             if obj.name in possibles:
@@ -49,40 +49,40 @@ class SettingApi(Resource):
         if name == 'polling_interval':
             obj = PollingInterval.get()
             if not obj:
-                return {"message": "object not found"}, 404
+                return {"msg": "object not found"}, 404
 
             serialized, errors = PollingIntervalSchema().load(json.loads(obj.data))
 
         elif name == 'temperature_display':
             obj = TemperatureDisplay.get()
             if not obj:
-                return {"message": "object not found"}, 404
+                return {"msg": "object not found"}, 404
 
             serialized, errors = TemperatureDisplaySchema().load(json.loads(obj.data))
 
         elif name == 'time_display':
             obj = TimeDisplay.get()
             if not obj:
-                return {"message": "object not found"}, 404
+                return {"msg": "object not found"}, 404
 
             serialized, errors = TimeDisplaySchema().load(json.loads(obj.data))
 
         elif name == 'primitive_wireless':
             obj = PrimitiveWirelessSetting.get()
             if not obj:
-                return {"message": "object not found"}, 404
+                return {"msg": "object not found"}, 404
 
             serialized, errors = PrimitiveWirelessSettingSchema().load(json.loads(obj.data))
 
         elif name == 'vesync_account':
             obj = VesyncAccount.get()
             if not obj:
-                return {"message": "object not found"}, 404
+                return {"msg": "object not found"}, 404
 
             serialized, errors = VesyncAccountSchema().load(json.loads(obj.data))
 
         else:
-            return {"message": "Unexpected setting type"}, 404
+            return {"msg": "Unexpected setting type"}, 404
 
         if errors:
             return errors, 400
@@ -103,32 +103,32 @@ class SettingApi(Resource):
             PollingInterval.set()
             obj = PollingInterval.get()
             if not obj:
-                return {"message": "object not found"}, 404
+                return {"msg": "object not found"}, 404
 
             serialized, errors = PollingIntervalSchema().dump(json.loads(obj.data))
 
         elif name == 'temperature_display':
             obj = TemperatureDisplay.get()
             if not obj:
-                return {"message": "object not found"}, 404
+                return {"msg": "object not found"}, 404
 
             serialized, errors = TemperatureDisplaySchema().dump(json.loads(obj.data))
 
         elif name == 'time_display':
             obj = TimeDisplay.get()
             if not obj:
-                return {"message": "object not found"}, 404
+                return {"msg": "object not found"}, 404
 
             serialized, errors = TimeDisplaySchema().dump(json.loads(obj.data))
 
         elif name == 'primitive_wireless':
             obj = PrimitiveWirelessSetting.get()
             if not obj:
-                return {"message": "object not found"}, 404
+                return {"msg": "object not found"}, 404
 
             serialized, errors = PrimitiveWirelessSettingSchema().dump(json.loads(obj.data))
         else:
-            return {"message": "Unexpected setting type"}, 404
+            return {"msg": "Unexpected setting type"}, 404
 
 
     # @jwt_required

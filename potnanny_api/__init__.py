@@ -27,26 +27,29 @@ def config_extensions(app):
     jwt.init_app(app)
 
 def config_api(app):
-    from potnanny_api.apps.auth import bp as auth_bp
+    from potnanny_api.apps.auth.api import bp as auth_bp
     app.register_blueprint(auth_bp)
 
-    from potnanny_api.apps.user import bp as user_bp
+    from potnanny_api.apps.user.api import bp as user_bp
     app.register_blueprint(user_bp)
 
-    from potnanny_api.apps.room import bp as room_bp
+    from potnanny_api.apps.room.api import bp as room_bp
     app.register_blueprint(room_bp)
 
-    from potnanny_api.apps.sensor import bp as sensor_bp
+    from potnanny_api.apps.sensor.api import bp as sensor_bp
     app.register_blueprint(sensor_bp)
 
-    from potnanny_api.apps.grow import bp as grow_bp
+    from potnanny_api.apps.grow.api import bp as grow_bp
     app.register_blueprint(grow_bp)
 
-    from potnanny_api.apps.action import bp as action_bp
+    from potnanny_api.apps.action.api import bp as action_bp
     app.register_blueprint(action_bp)
 
-    from potnanny_api.apps.outlet import bp as outlet_bp
+    from potnanny_api.apps.outlet.api import bp as outlet_bp
     app.register_blueprint(outlet_bp)
 
-    from potnanny_api.apps.schedule import bp as schedule_bp
+    from potnanny_api.apps.schedule.api import bp as schedule_bp
     app.register_blueprint(schedule_bp)
+
+    from potnanny_api.apps.plugin.api import bp as plugin_bp
+    app.register_blueprint(plugin_bp)

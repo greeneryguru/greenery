@@ -17,7 +17,7 @@ ifc = CrudInterface(db_session, Sensor, SensorSchema)
 
 class SensorListApi(Resource):
 
-    @jwt_required
+    # @jwt_required
     def get(self):
         ser, err, code = ifc.get()
         if err:
@@ -25,7 +25,7 @@ class SensorListApi(Resource):
 
         return ser, code
 
-    @jwt_required
+    # @jwt_required
     def post(self):
         data, errors = SensorSchema().load(request.get_json())
         if errors:
@@ -40,7 +40,7 @@ class SensorListApi(Resource):
 
 class SensorApi(Resource):
 
-    @jwt_required
+    # @jwt_required
     def get(self, pk):
         ser, err, code = ifc.get(pk)
         if err:
@@ -48,7 +48,7 @@ class SensorApi(Resource):
 
         return ser, code
 
-    @jwt_required
+    # @jwt_required
     def put(self, pk):
         data, errors = SensorSchema().load(request.get_json())
         if errors:
@@ -60,7 +60,7 @@ class SensorApi(Resource):
 
         return ser, code
 
-    @jwt_required
+    # @jwt_required
     def delete(self, pk):
         ser, err, code = ifc.delete(pk)
         if err:
@@ -71,7 +71,7 @@ class SensorApi(Resource):
 
 class SensorChartApi(Resource):
 
-    @jwt_required
+    # @jwt_required
     def get(self, pk, prev_hours=12):
         """Query measurements for graphing functions."""
 
@@ -92,7 +92,7 @@ class SensorChartApi(Resource):
 
         sensor = Sensor.query.get(pk)
         if not sensor:
-            return {'message': "Sensor with id '{}' not found".format(pk)}, 404
+            return {'msg': "Sensor with id '{}' not found".format(pk)}, 404
 
         types = sensor.measurement_types()
         try:
@@ -135,7 +135,7 @@ class SensorChartApi(Resource):
 
         chart['options']['legend']['display'] = True
         chart['options']['scales']['xAxes'][0]['display'] = True
-        
+
         return chart, 200
 
 

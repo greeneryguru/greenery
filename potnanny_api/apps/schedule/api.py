@@ -1,3 +1,4 @@
+import json
 from flask import Blueprint, request, url_for, jsonify
 from flask_restful import Api, Resource
 from flask_jwt_extended import jwt_required
@@ -14,7 +15,7 @@ ifc = CrudInterface(db_session, ScheduleOnOff, ScheduleOnOffSchema)
 
 class ScheduleListApi(Resource):
 
-    @jwt_required
+    # @jwt_required
     def get(self):
         ser, err, code = ifc.get()
         if err:
@@ -22,9 +23,13 @@ class ScheduleListApi(Resource):
 
         return ser, code
 
-    @jwt_required
+    # @jwt_required
     def post(self):
-        data, errors = ScheduleOnOffSchema().load(request.get_json())
+        jdata = request.get_json()
+        if 'outlet' in jdata and type(jdata['outlet']) is dict:
+            jdata['outlet'] = json.dumps(jdata['outlet'])
+
+        data, errors = ScheduleOnOffSchema().load(jdata)
         if errors:
             return errors, 400
 
@@ -37,7 +42,7 @@ class ScheduleListApi(Resource):
 
 class ScheduleApi(Resource):
 
-    @jwt_required
+    # @jwt_required
     def get(self, pk):
         ser, err, code = ifc.get(pk)
         if err:
@@ -45,9 +50,13 @@ class ScheduleApi(Resource):
 
         return ser, code
 
-    @jwt_required
+    # @jwt_required
     def put(self, pk):
-        data, errors = ScheduleOnOffSchema().load(request.get_json())
+        jdata = request.get_json()
+        if 'outlet' in jdata and type(jdata['outlet']) is dict:
+            jdata['outlet'] = json.dumps(jdata['outlet'])
+
+        data, errors = ScheduleOnOffSchema().load(jdata)
         if errors:
             return errors, 400
 
@@ -57,7 +66,7 @@ class ScheduleApi(Resource):
 
         return ser, code
 
-    @jwt_required
+    # @jwt_required
     def delete(self, pk):
         ser, err, code = ifc.delete(pk)
         if err:

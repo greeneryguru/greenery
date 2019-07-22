@@ -19,7 +19,7 @@ class OutletListApi(Resource):
 
         results = oc.available_outlets()
         if not results:
-            return {'message': 'no outlets found'}, 404
+            return {'msg': 'no outlets found'}, 404
 
         data, errors = GenericOutletSchema(many=True).load(results)
         if errors:
@@ -58,7 +58,7 @@ class OutletApi(Resource):
 
         outlet = oc.get_outlet(id)
         if outlet is None:
-            return {'message': 'outlet not found'}, 404
+            return {'msg': 'outlet not found'}, 404
 
         return outlet, 200
 
@@ -74,7 +74,7 @@ class OutletApi(Resource):
         """
 
         if type(pk) is not int and not pk.isdigit():
-            return {'message': 'invalid outlet id for this operation'}, 400
+            return {'msg': 'invalid outlet id for this operation'}, 400
 
         data, errors = OutletSchema().load(request.get_json())
         if errors:
@@ -82,7 +82,7 @@ class OutletApi(Resource):
 
         obj = Outlet.query.get(int(pk))
         if not obj:
-            return {'message': 'object with id %s not found' % pk}, 404
+            return {'msg': 'object with id %s not found' % pk}, 404
 
         for k, v in data.items():
             setattr(obj, k, v)
@@ -106,7 +106,7 @@ class OutletApi(Resource):
         """
 
         if type(pk) is not int and not pk.isdigit():
-            return {'message': 'invalid outlet id for this operation'}, 400
+            return {'msg': 'invalid outlet id for this operation'}, 400
 
         ser, err, code = ifc.delete(int(pk))
         if err:
@@ -132,7 +132,7 @@ class OutletSwitchApi(Resource):
         if result:
             return data, 200
         else:
-            return {'message': 'failed to switch outlet'}, 400
+            return {'msg': 'failed to switch outlet'}, 500
 
 
 api.add_resource(OutletListApi, '')

@@ -58,7 +58,7 @@ class RoomApi(Resource):
 
         return ser, code
 
-    @jwt_required
+    # @jwt_required
     def delete(self, pk):
         ser, err, code = ifc.delete(pk)
         if err:
@@ -78,7 +78,7 @@ class RoomLightApi(Resource):
             else:
                 return data, 200
         except ValueError:
-            return {'message': 'Room with id {} not found'.format(pk)}, 404
+            return {'msg': 'Room with id {} not found'.format(pk)}, 404
 
     # @jwt_required
     def post(self, pk):
@@ -95,7 +95,7 @@ class RoomLightApi(Resource):
             else:
                 return data, 200
         except ValueError:
-            return {'message': 'Unexpected error'}, 400
+            return {'msg': 'Unexpected error'}, 500
 
     # @jwt_required
     def put(self, pk):
@@ -107,7 +107,7 @@ class RoomLightApi(Resource):
             else:
                 return data, 200
         except ValueError:
-            return {'message': 'Room with id {} not found'.format(pk)}, 404
+            return {'msg': 'Room with id {} not found'.format(pk)}, 404
 
 
         data, errors = RoomSchema().load(request.get_json())

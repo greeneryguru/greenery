@@ -33,7 +33,7 @@ class CrudInterface(object):
         if pk is None:
             r = self._objclass.query.all()
             if not r:
-                return (None, {"message": "no data"}, 404)
+                return (None, {"msg": "no data"}, 404)
 
             data, errors = self._objschema(many=True).dump(r)
             if errors:
@@ -41,7 +41,7 @@ class CrudInterface(object):
         else:
             obj = self._objclass.query.get(int(pk))
             if not obj:
-                return (None, {"message": "object does not exist"}, 404)
+                return (None, {"msg": "object does not exist"}, 404)
 
             data, errors = self._objschema().dump(obj)
 
@@ -88,7 +88,7 @@ class CrudInterface(object):
         http_code = 200
         obj = self._objclass.query.get(pk)
         if not obj:
-            return (None, {"message": "object does not exist"}, 404)
+            return (None, {"msg": "object does not exist"}, 404)
 
         try:
             for k,v in data.items():
@@ -117,7 +117,7 @@ class CrudInterface(object):
 
         obj = self._objclass.query.get(pk)
         if not obj:
-            return(None, {"message": "object does not exist"}, 404)
+            return(None, {"msg": "object does not exist"}, 404)
 
         self._db.delete(obj)
         self._db.commit()
